@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 const FAQS = [
   {
     q: "O CTM Pro substitui o TradingView, Investing Pro e Finviz?",
-    a: "Sim. O Pro inclui screener europeu + dados fundamentais + análise a pedido. A maioria dos membros cancela 2-3 subscrições ao entrar no CTM."
+    a: "Sim. O Pro inclui screener europeu, brasileiro e americano + dados fundamentais + análise a pedido. A maioria dos membros cancela 2-3 subscrições ao entrar no CTM."
   },
   {
     q: "Funciona para acções brasileiras (B3)?",
@@ -337,7 +337,6 @@ export default function Home() {
               <div className="ctm-plan-price">€179</div>
               <div className="ctm-plan-period">venda única · sem mensalidade</div>
               <ul className="ctm-plan-features">
-                <li>Inclui 3 meses Pro</li>
                 <li>Diário de trades pessoal</li>
                 <li>Calculadora de posição</li>
                 <li>Watchlist pessoal</li>
