@@ -113,7 +113,7 @@ export default function Home() {
             "Screener europeu (PSI · IBEX · DAX)",
             "Comunidade PT/ES/BR",
             "Sem promessas de enriquecimento rápido",
-            "Método baseado em Minervini/SEPA adaptado à Europa",
+            "Método baseado no estudo de vários métodos de sucesso — novo conceito preparado para traders PT/BR/ES",
           ].map((p) => (
             <span className="ctm-pill" key={p}>✓ {p}</span>
           ))}
