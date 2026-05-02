@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CTM Publish — Clean Trend Method</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--border:#2a2a2a;
+  --accent:#00e5a0;--accent2:#0066ff;--text:#f0f0f0;--muted:#666;
+  --danger:#ff4444;--warn:#ffaa00;
+}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding:0}
+.app{max-width:680px;margin:0 auto;padding:1.5rem 1rem}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:2rem}
+.logo-mark{width:32px;height:32px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-text{font-size:15px;font-weight:600;letter-spacing:0.05em;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:0.08em}
+.section{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:1rem}
+.section-num{width:22px;height:22px;border-radius:50%;background:var(--surface2);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'DM Mono',monospace;color:var(--muted)}
+.section-title{font-size:13px;font-weight:500;color:var(--text);letter-spacing:0.03em}
+.drop-zone{border:1px dashed var(--border);border-radius:8px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.drop-zone:hover{border-color:var(--accent);background:rgba(0,229,160,0.03)}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:24px;margin-bottom:8px;display:block}
+.drop-text{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.drop-hint{font-size:10px;color:var(--muted);margin-top:4px;opacity:0.6}
+#preview-img{width:100%;border-radius:8px;display:none;max-height:280px;object-fit:cover}
+.channels{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+.channel-btn{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px}
+.channel-btn.active-pro{border-color:var(--accent);background:rgba(0,229,160,0.08)}
+.channel-btn.active-free{border-color:var(--accent2);background:rgba(0,102,255,0.08)}
+.channel-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all 0.2s;flex-shrink:0}
+.channel-btn.active-pro .channel-dot{background:var(--accent)}
+.channel-btn.active-free .channel-dot{background:var(--accent2)}
+.channel-name{font-size:12px;font-weight:500}
+.channel-id{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+textarea{width:100%;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;resize:vertical;min-height:200px;line-height:1.7;outline:none;transition:border-color 0.2s}
+textarea:focus{border-color:var(--accent)}
+textarea::placeholder{color:var(--muted)}
+.char-count{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right;margin-top:4px}
+.mode-tabs{display:flex;gap:6px;margin-bottom:10px}
+.mode-tab{font-size:11px;padding:4px 10px;border-radius:4px;border:0.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s}
+.mode-tab.active{background:var(--surface2);color:var(--text);border-color:var(--accent)}
+.publish-btn{width:100%;padding:14px;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.05em;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.publish-btn:hover{background:#00ffb3;transform:translateY(-1px)}
+.publish-btn:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed;transform:none}
+.status{display:none;background:var(--surface2);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;font-family:'DM Mono',monospace;white-space:pre-wrap}
+.status.success{border-left:3px solid var(--accent);display:block}
+.status.error{border-left:3px solid var(--danger);display:block}
+.status.loading{border-left:3px solid var(--warn);display:block}
+.ticker-row{display:flex;gap:8px;margin-bottom:10px}
+.ticker-input{flex:1;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;font-weight:500;outline:none;letter-spacing:0.08em;transition:border-color 0.2s}
+.ticker-input:focus{border-color:var(--accent)}
+.market-select{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;outline:none;cursor:pointer}
+.tag{font-size:10px;padding:2px 8px;border-radius:3px;font-family:'DM Mono',monospace;font-weight:500}
+.tag-pro{background:rgba(0,229,160,0.12);color:var(--accent);border:0.5px solid rgba(0,229,160,0.3)}
+.tag-free{background:rgba(0,102,255,0.12);color:#4d9fff;border:0.5px solid rgba(0,102,255,0.3)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" fill="none" width="18" height="18"><path d="M9 2L16 6V12L9 16L2 12V6L9 2Z" stroke="#000" stroke-width="1.5"/><circle cx="9" cy="9" r="2.5" fill="#000"/></svg>
+    </div>
+    <div>
+      <div class="logo-text">CTM PUBLISH</div>
+      <div class="logo-sub">Clean Trend Method — Painel de publicação</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Activo e mercado</div>
+    </div>
+    <div class="ticker-row">
+      <input class="ticker-input" id="ticker" placeholder="TICKER (ex: FTI)" />
+      <select class="market-select" id="market">
+        <option>NYSE</option><option>NASDAQ</option><option>PSI</option><option>EURONEXT</option><option>B3</option><option>LSE</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Gráfico</div>
+    </div>
+    <div class="drop-zone" id="dropZone">
+      <input type="file" accept="image/*" id="imgInput" onchange="handleImage(this)" />
+      <span class="drop-icon" id="dropIcon">📈</span>
+      <div class="drop-text" id="dropText">Clica ou arrasta o screenshot do gráfico</div>
+      <div class="drop-hint" id="dropHint">PNG, JPG — máx. 10MB</div>
+    </div>
+    <img id="preview-img" />
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">Relatório</div>
+    </div>
+    <div class="mode-tabs">
+      <button class="mode-tab active" onclick="setMode('pro',this)">Pro completo</button>
+      <button class="mode-tab" onclick="setMode('free',this)">Free (resumo)</button>
+      <button class="mode-tab" onclick="setMode('custom',this)">Personalizado</button>
+    </div>
+    <textarea id="report" placeholder="Cola aqui o relatório gerado pelo ChatGPT..." oninput="countChars()"></textarea>
+    <div class="char-count"><span id="chars">0</span> caracteres</div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">Destino</div>
+    </div>
+    <div class="channels">
+      <div class="channel-btn active-pro" id="btn-pro" onclick="toggleChannel('pro')">
+        <div class="channel-dot"></div>
+        <div>
+          <div class="channel-name">CTM Pro <span class="tag tag-pro">PRO</span></div>
+          <div class="channel-id">-1003994820299</div>
+        </div>
+      </div>
+      <div class="channel-btn" id="btn-free" onclick="toggleChannel('free')">
+        <div class="channel-dot"></div>
+        <div>
+          <div class="channel-name">Canal público <span class="tag tag-free">FREE</span></div>
+          <div class="channel-id">-1003997483816</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="publish-btn" id="publishBtn" onclick="publish()">
+    <span>Publicar no Telegram</span>
+    <span>→</span>
+  </button>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+let channels = { pro: true, free: false };
+let imageFile = null;
+let currentMode = 'pro';
+
+function handleImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  imageFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('preview-img');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    const dz = document.getElementById('dropZone');
+    dz.style.padding = '0';
+    dz.style.border = '0.5px solid var(--accent)';
+    document.getElementById('dropIcon').style.display = 'none';
+    document.getElementById('dropText').style.display = 'none';
+    document.getElementById('dropHint').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function toggleChannel(ch) {
+  channels[ch] = !channels[ch];
+  const btn = document.getElementById('btn-' + ch);
+  if (channels[ch]) {
+    btn.classList.add(ch === 'pro' ? 'active-pro' : 'active-free');
+  } else {
+    btn.classList.remove('active-pro', 'active-free');
+  }
+}
+
+function setMode(mode, el) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const ticker = document.getElementById('ticker').value || 'TICKER';
+  const market = document.getElementById('market').value;
+  const date = new Date().toLocaleDateString('pt-PT', {day:'2-digit', month:'long', year:'numeric'});
+  if (mode === 'free') {
+    document.getElementById('report').value = `📊 SETUP CTM — ${ticker}\n${date} | ${market}\n\n⚡ DIAGNÓSTICO\n[Cola aqui só o diagnóstico e estado técnico]\n\n🔒 Análise completa disponível no CTM Pro\n👉 cleantrendmethod.lemonsqueezy.com\n\n📢 @cleantrendmethod | 🤖 @CleanTrendMethod_bot`;
+  } else {
+    document.getElementById('report').value = '';
+    document.getElementById('report').placeholder = mode === 'pro' ? 'Cola aqui o relatório completo gerado pelo ChatGPT...' : 'Escreve o teu texto personalizado...';
+  }
+  countChars();
+}
+
+function countChars() {
+  document.getElementById('chars').textContent = document.getElementById('report').value.length;
+}
+
+async function publish() {
+  const ticker = document.getElementById('ticker').value.trim();
+  const report = document.getElementById('report').value.trim();
+  if (!ticker) { showStatus('error', 'Indica o ticker do activo.'); return; }
+  if (!report) { showStatus('error', 'O relatório está vazio.'); return; }
+  if (!channels.pro && !channels.free) { showStatus('error', 'Selecciona pelo menos um canal.'); return; }
+
+  const btn = document.getElementById('publishBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>A publicar...</span>';
+  showStatus('loading', 'A enviar para o Telegram...');
+
+  const formData = new FormData();
+  formData.append('ticker', ticker);
+  formData.append('market', document.getElementById('market').value);
+  formData.append('report', report);
+  formData.append('channels', JSON.stringify(channels));
+  formData.append('mode', currentMode);
+  if (imageFile) formData.append('image', imageFile);
+
+  try {
+    const res = await fetch('https://n8n.cleantrendmethod.com/webhook/ctm-publish', {
+      method: 'POST',
+      body: formData
+    });
+    if (res.ok) {
+      showStatus('success', '✓ Publicado com sucesso no Telegram!');
+    } else {
+      throw new Error('Erro ' + res.status);
+    }
+  } catch(e) {
+    showStatus('error', 'Erro ao publicar.\n' + e.message);
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<span>Publicar no Telegram</span><span>→</span>';
+}
+
+function showStatus(type, msg) {
+  const el = document.getElementById('status');
+  el.className = 'status ' + type;
+  el.textContent = msg;
+}
+</script>
+</body>
+</html>
