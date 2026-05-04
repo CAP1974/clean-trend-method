@@ -136,6 +136,10 @@ export default function Home() {
             <div className="ctm-success">✓ Estás na lista. Vemo-nos em breve.</div>
           )}
           <p className="ctm-hero-disclaimer">Sem spam. Podes cancelar a qualquer momento.</p>
+          <a href="https://t.me/cleantrendmethod" target="_blank" rel="noopener" className="ctm-hero-telegram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
+            Seguir canal gratuito no Telegram
+          </a>
         </div>
         <div className="ctm-hero-grid" aria-hidden="true" />
       </section>
@@ -330,8 +334,9 @@ export default function Home() {
                 <li>Track record público</li>
                 <li>1 /analisa por dia (FMP)</li>
               </ul>
-              <a href="https://t.me/cleantrendmethod" className="ctm-plan-btn ctm-plan-btn--outline" target="_blank" rel="noopener">
-                Seguir canal →
+              <a href="https://t.me/cleantrendmethod" className="ctm-plan-btn ctm-plan-btn--telegram" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{marginRight: '8px', verticalAlign: 'middle'}}><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
+                Seguir no Telegram →
               </a>
             </div>
 
@@ -634,6 +639,19 @@ export default function Home() {
           max-width: 480px; margin: 0 auto 14px;
         }
         .ctm-hero-disclaimer { font-size: 0.72rem; color: #333; }
+        .ctm-hero-telegram {
+          display: inline-flex; align-items: center; gap: 8px;
+          margin-top: 16px;
+          font-family: 'DM Mono', monospace; font-size: 0.72rem;
+          color: #5b9bd5; text-decoration: none; letter-spacing: 0.05em;
+          transition: color 0.2s;
+        }
+        .ctm-hero-telegram:hover { color: #7ab3e0; }
+        .ctm-plan-btn--telegram {
+          background: #229ED9; color: #fff;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .ctm-plan-btn--telegram:hover { background: #1a8bbf; }
 
         .ctm-section { padding: 100px 48px; }
         .ctm-section--dark { background: var(--bg-dark); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
