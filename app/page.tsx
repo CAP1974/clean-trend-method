@@ -35,6 +35,7 @@ const FAQS = [
 export default function Home() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -45,9 +46,22 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) setSubmitted(true);
+    if (!email || loading) return;
+    setLoading(true);
+    try {
+      await fetch('/api/lista-espera', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitted(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -85,7 +99,7 @@ export default function Home() {
           </h1>
           <p className="ctm-hero-sub">
             Clean Trend Method é o único sistema europeu de momentum com track record público real —
-            wins e losses — desenvolvido para traders de Portugal, Brasil e Espanha.
+            wins e losses — desenvolvido para investidores de Portugal, Brasil e Espanha.
             Tudo o que precisas numa única subscrição.
           </p>
           <div className="ctm-hero-stats">
@@ -114,8 +128,8 @@ export default function Home() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <button className="ctm-btn" type="submit">
-                Entrar na lista de espera →
+              <button className="ctm-btn" type="submit" disabled={loading}>
+                {loading ? "A guardar..." : "Entrar na lista de espera →"}
               </button>
             </form>
           ) : (
@@ -217,26 +231,39 @@ export default function Home() {
       <section className="ctm-section" id="pro">
         <div className="ctm-section-inner">
           <div className="ctm-label">CTM Pro</div>
-          <h2 className="ctm-h2">Tudo o que o trader<br />europeu precisa.</h2>
+          <h2 className="ctm-h2">Tudo o que um investidor<br />precisa.</h2>
           <p className="ctm-body">
             Uma subscrição que substitui Investing Pro, Finviz Elite, TradingView Pro e serviços de sinais.
             Poupança média de €125–275/mês.
           </p>
           <div className="ctm-features-grid">
             {[
-              { icon: "◆", title: "5–10 setups diários", desc: "Score, pivot, stop, target e ratio R — enviados às 7h30 antes da abertura" },
-              { icon: "◉", title: "Market Pulse diário", desc: "Estado do mercado em VERDE / AMARELO / VERMELHO com modo de operação recomendado" },
-              { icon: "⌘", title: "/analisa TICKER", desc: "30 pedidos/mês — score CTM completo, análise em português, resposta em segundos" },
-              { icon: "◈", title: "Screener europeu + B3", desc: "PSI, IBEX, DAX, B3, NYSE, NASDAQ — filtrado pelos 5 componentes CTM em tempo real" },
-              { icon: "◇", title: "Dados fundamentais", desc: "EPS, Revenue, ROE, calendário de resultados e dividendos para todos os mercados" },
-              { icon: "◎", title: "Macro europeu + Brasil", desc: "BCE, Selic, inflação, PMI — contexto macroeconómico relevante para a tua estratégia" },
-              { icon: "◐", title: "Weekly Summary", desc: "Resumo semanal às sextas com track record atualizado e setups a vigiar" },
-              { icon: "◑", title: "Escola CTM completa", desc: "Método documentado, casos reais, biblioteca de setups históricos com análise post-trade" },
-              { icon: "◒", title: "Comunidade Pro", desc: "Canal Telegram + Discord privado com acesso direto e discussão de setups em tempo real" },
+              {
+                icon: "⌘", title: "/analisa TICKER", featured: true,
+                badge: "100 pedidos/mês",
+                desc: "Análise técnica completa em segundos — EMA21, EMA50, RSI14, volume, alinhamento de médias e leitura CTM PRO em português. Powered by FMP."
+              },
+              {
+                icon: "◈", title: "/fundamentais TICKER", featured: true,
+                badge: "20 pedidos/mês",
+                desc: "12 indicadores fundamentais — EPS, Revenue, ROE, margens, P/E, dívida e Score CTM 0–10. Interpretação em linguagem simples. NYSE e NASDAQ."
+              },
+              {
+                icon: "◎", title: "/carteira", featured: true,
+                badge: "10 ativos · radar às 22h",
+                desc: "Regista os teus ativos e recebe todas as noites um relatório personalizado — estado de cada posição com EMA21, RSI e classificação INTACTA / ATENÇÃO / COMPROMETIDA."
+              },
+              { icon: "◆", title: "5–10 setups diários", featured: false, badge: "", desc: "Score, pivot, stop, target e ratio R — enviados às 7h30 antes da abertura de cada sessão." },
+              { icon: "◉", title: "Market Pulse diário", featured: false, badge: "", desc: "Estado do mercado em VERDE / AMARELO / VERMELHO com modo de operação recomendado." },
+              { icon: "◇", title: "Screener Europa + B3", featured: false, badge: "", desc: "PSI, IBEX, DAX, B3, NYSE, NASDAQ — filtrado pelos 5 componentes CTM em tempo real." },
+              { icon: "◐", title: "Weekly Summary", featured: false, badge: "", desc: "Resumo semanal às sextas com track record atualizado e ativos a vigiar na semana seguinte." },
+              { icon: "◑", title: "Escola CTM completa", featured: false, badge: "", desc: "Método documentado, casos reais, biblioteca de setups históricos com análise post-trade." },
+              { icon: "◒", title: "Comunidade Pro", featured: false, badge: "", desc: "Canal Telegram + Discord privado com acesso direto e discussão de setups em tempo real." },
             ].map((f) => (
-              <div className="ctm-feature-card" key={f.title}>
+              <div className={`ctm-feature-card ${f.featured ? "ctm-feature-card--featured" : ""}`} key={f.title}>
                 <span className="ctm-feature-icon">{f.icon}</span>
                 <div className="ctm-feature-title">{f.title}</div>
+                {f.badge && <div className="ctm-feature-badge">{f.badge}</div>}
                 <div className="ctm-feature-desc">{f.desc}</div>
               </div>
             ))}
@@ -258,7 +285,7 @@ export default function Home() {
             <div className="ctm-tr-card ctm-tr-card--gold">
               <div className="ctm-tr-num">+10%</div>
               <div className="ctm-tr-label">Resultado mensal médio</div>
-              <div className="ctm-tr-sub">1 mês de histórico público</div>
+              <div className="ctm-tr-sub">histórico público</div>
             </div>
             <div className="ctm-tr-card">
               <div className="ctm-tr-num">100%</div>
@@ -301,6 +328,7 @@ export default function Home() {
                 <li>1–2 setups por semana</li>
                 <li>Market Pulse semanal</li>
                 <li>Track record público</li>
+                <li>1 /analisa por dia (FMP)</li>
               </ul>
               <a href="https://t.me/cleantrendmethod" className="ctm-plan-btn ctm-plan-btn--outline" target="_blank" rel="noopener">
                 Seguir canal →
@@ -316,12 +344,12 @@ export default function Home() {
               <div className="ctm-plan-savings">Substitui €125–275/mês de outras ferramentas</div>
               <ul className="ctm-plan-features">
                 <li>Tudo do Free, mais:</li>
+                <li>/analisa — 100 pedidos/mês (FMP)</li>
+                <li>/fundamentais — 20 pedidos/mês</li>
+                <li>/carteira — 10 ativos · radar às 22h</li>
                 <li>5–10 setups diários completos</li>
                 <li>Market Pulse todos os dias</li>
-                <li>/analisa — 30 pedidos/mês</li>
                 <li>Screener Europa + Brasil + EUA</li>
-                <li>Dados fundamentais completos</li>
-                <li>Macro europeu + Selic/Brasil</li>
                 <li>Weekly Summary às sextas</li>
                 <li>Escola CTM completa</li>
                 <li>Comunidade Pro (Telegram + Discord)</li>
@@ -401,8 +429,8 @@ export default function Home() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <button className="ctm-btn" type="submit">
-                Entrar na lista →
+              <button className="ctm-btn" type="submit" disabled={loading}>
+                {loading ? "A guardar..." : "Entrar na lista →"}
               </button>
             </form>
           ) : (
@@ -458,15 +486,13 @@ export default function Home() {
         html { scroll-behavior: smooth; }
 
         .ctm-root {
-          background: #09090700;
-          background-color: #09090f;
+          background: #09090f;
           color: var(--text);
           font-family: 'DM Sans', sans-serif;
           min-height: 100vh;
           overflow-x: hidden;
         }
 
-        /* ── NAV ── */
         .ctm-nav {
           position: fixed; top: 0; left: 0; right: 0; z-index: 100;
           display: flex; align-items: center; justify-content: space-between;
@@ -488,12 +514,8 @@ export default function Home() {
           font-size: 1rem; font-weight: 500;
           color: var(--gold); letter-spacing: 0.15em;
         }
-        .ctm-logo-name {
-          font-size: 0.75rem; color: #444; letter-spacing: 0.05em;
-        }
-        .ctm-nav-links {
-          display: flex; align-items: center; gap: 32px;
-        }
+        .ctm-logo-name { font-size: 0.75rem; color: #444; letter-spacing: 0.05em; }
+        .ctm-nav-links { display: flex; align-items: center; gap: 32px; }
         .ctm-nav-links a {
           font-size: 0.82rem; color: var(--muted); text-decoration: none;
           letter-spacing: 0.03em; transition: color 0.2s;
@@ -514,10 +536,8 @@ export default function Home() {
         }
         .ctm-hamburger span {
           display: block; width: 22px; height: 1.5px; background: var(--muted);
-          transition: 0.2s;
         }
 
-        /* ── HERO ── */
         .ctm-hero {
           min-height: 100vh;
           display: flex; align-items: center; justify-content: center;
@@ -568,10 +588,10 @@ export default function Home() {
           max-width: 620px; margin: 0 auto 48px;
         }
         .ctm-hero-stats {
-          display: flex; align-items: center; justify-content: center;
-          gap: 0; margin-bottom: 48px;
+          display: inline-flex; align-items: center;
+          margin-bottom: 48px;
           border: 1px solid var(--border);
-          background: #0d0d0a; display: inline-flex;
+          background: #0d0d0a;
         }
         .ctm-stat-pill {
           display: flex; flex-direction: column; align-items: center;
@@ -579,19 +599,15 @@ export default function Home() {
         }
         .ctm-stat-n {
           font-family: 'Playfair Display', serif;
-          font-size: 1.8rem; font-weight: 900; color: var(--gold);
-          line-height: 1;
+          font-size: 1.8rem; font-weight: 900; color: var(--gold); line-height: 1;
         }
         .ctm-stat-l {
           font-family: 'DM Mono', monospace;
           font-size: 0.62rem; letter-spacing: 0.1em;
           color: var(--muted); text-transform: uppercase; margin-top: 4px;
         }
-        .ctm-stat-divider {
-          width: 1px; height: 40px; background: var(--border);
-        }
+        .ctm-stat-divider { width: 1px; height: 40px; background: var(--border); }
 
-        /* ── FORM ── */
         .ctm-form {
           display: flex; max-width: 480px; margin: 0 auto 14px;
           border: 1px solid var(--border);
@@ -609,18 +625,16 @@ export default function Home() {
           font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em;
           cursor: pointer; white-space: nowrap; transition: background 0.2s;
         }
-        .ctm-btn:hover { background: var(--gold-light); }
+        .ctm-btn:hover:not(:disabled) { background: var(--gold-light); }
+        .ctm-btn:disabled { opacity: 0.7; cursor: not-allowed; }
         .ctm-success {
           font-family: 'DM Mono', monospace; font-size: 0.88rem;
           color: var(--gold); padding: 20px;
           border: 1px solid var(--border);
           max-width: 480px; margin: 0 auto 14px;
         }
-        .ctm-hero-disclaimer {
-          font-size: 0.72rem; color: #333;
-        }
+        .ctm-hero-disclaimer { font-size: 0.72rem; color: #333; }
 
-        /* ── SECTIONS ── */
         .ctm-section { padding: 100px 48px; }
         .ctm-section--dark { background: var(--bg-dark); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
         .ctm-section--cta { text-align: center; }
@@ -646,22 +660,19 @@ export default function Home() {
         }
         .ctm-body--center { margin-left: auto; margin-right: auto; }
 
-        /* ── MARKETS ── */
         .ctm-markets-grid {
           display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
           border: 1px solid var(--border); background: var(--border);
         }
         .ctm-market-card {
           display: flex; align-items: center; gap: 16px;
-          background: var(--bg-card); padding: 24px 28px;
-          transition: background 0.2s;
+          background: var(--bg-card); padding: 24px 28px; transition: background 0.2s;
         }
         .ctm-market-card:hover { background: #131310; }
         .ctm-market-flag { font-size: 1.6rem; }
         .ctm-market-name { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 3px; }
         .ctm-market-detail { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.05em; }
 
-        /* ── METHOD ── */
         .ctm-method-list { display: flex; flex-direction: column; }
         .ctm-method-item {
           display: flex; align-items: flex-start; gap: 32px;
@@ -674,41 +685,37 @@ export default function Home() {
         }
         .ctm-method-content { flex: 1; }
         .ctm-method-header { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; flex-wrap: wrap; }
-        .ctm-method-name {
-          font-family: 'Playfair Display', serif;
-          font-size: 1.2rem; font-weight: 700; color: #f5eedc;
-        }
+        .ctm-method-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: #f5eedc; }
         .ctm-method-badge {
           font-family: 'DM Mono', monospace; font-size: 0.62rem;
-          color: var(--gold); border: 1px solid #2a2a18;
-          padding: 3px 10px; letter-spacing: 0.08em;
+          color: var(--gold); border: 1px solid #2a2a18; padding: 3px 10px; letter-spacing: 0.08em;
         }
         .ctm-method-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.7; font-weight: 300; }
 
-        /* ── FEATURES GRID ── */
         .ctm-features-grid {
           display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
           border: 1px solid var(--border); background: var(--border);
         }
-        .ctm-feature-card {
-          background: var(--bg-card); padding: 28px 24px;
-          transition: background 0.2s;
-        }
+        .ctm-feature-card { background: var(--bg-card); padding: 28px 24px; transition: background 0.2s; }
         .ctm-feature-card:hover { background: #131310; }
-        .ctm-feature-icon {
-          display: block; font-size: 1.1rem; color: var(--gold); margin-bottom: 14px;
+        .ctm-feature-card--featured {
+          background: #0e0e09;
+          border-top: 2px solid var(--gold);
         }
-        .ctm-feature-title { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+        .ctm-feature-card--featured:hover { background: #111108; }
+        .ctm-feature-icon { display: block; font-size: 1.1rem; color: var(--gold); margin-bottom: 14px; }
+        .ctm-feature-title { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+        .ctm-feature-badge {
+          font-family: 'DM Mono', monospace; font-size: 0.62rem;
+          color: var(--gold); letter-spacing: 0.08em; margin-bottom: 8px;
+        }
         .ctm-feature-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.65; font-weight: 300; }
 
-        /* ── TRACK RECORD ── */
         .ctm-tr-grid {
           display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
           border: 1px solid var(--border); background: var(--border); margin-bottom: 32px;
         }
-        .ctm-tr-card {
-          background: #080806; padding: 32px 24px; text-align: center;
-        }
+        .ctm-tr-card { background: #080806; padding: 32px 24px; text-align: center; }
         .ctm-tr-card--gold { background: #0d0d08; }
         .ctm-tr-num {
           font-family: 'Playfair Display', serif;
@@ -723,108 +730,53 @@ export default function Home() {
           font-family: 'DM Mono', monospace; letter-spacing: 0.03em;
         }
 
-        /* ── PRICING ── */
         .ctm-pricing-grid {
           display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
           background: var(--border); border: 1px solid var(--border); margin-bottom: 24px;
         }
         .ctm-plan { background: var(--bg-card); padding: 40px 32px; position: relative; }
-        .ctm-plan--featured {
-          background: #0e0e09;
-          border-left: 2px solid var(--gold);
-          border-right: 2px solid var(--gold);
-        }
+        .ctm-plan--featured { background: #0e0e09; border-left: 2px solid var(--gold); border-right: 2px solid var(--gold); }
         .ctm-plan-badge {
           font-family: 'DM Mono', monospace; font-size: 0.62rem;
-          letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase;
-          margin-bottom: 20px;
+          letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 20px;
         }
-        .ctm-plan-name {
-          font-family: 'Playfair Display', serif;
-          font-size: 1.4rem; font-weight: 700; color: #f5eedc; margin-bottom: 12px;
-        }
-        .ctm-plan-price {
-          font-family: 'Playfair Display', serif;
-          font-size: 3rem; font-weight: 900; color: var(--gold); line-height: 1;
-        }
-        .ctm-plan-period {
-          font-family: 'DM Mono', monospace; font-size: 0.65rem;
-          color: var(--muted); letter-spacing: 0.06em; margin-bottom: 8px;
-        }
-        .ctm-plan-savings {
-          font-size: 0.75rem; color: #5a7a4a;
-          margin-bottom: 24px; font-weight: 300;
-        }
-        .ctm-plan-features {
-          list-style: none; margin-bottom: 32px;
-        }
-        .ctm-plan-features li {
-          font-size: 0.83rem; color: var(--muted); padding: 7px 0;
-          border-bottom: 1px solid #151510; font-weight: 300;
-        }
+        .ctm-plan-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: #f5eedc; margin-bottom: 12px; }
+        .ctm-plan-price { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; color: var(--gold); line-height: 1; }
+        .ctm-plan-period { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 8px; }
+        .ctm-plan-savings { font-size: 0.75rem; color: #5a7a4a; margin-bottom: 24px; font-weight: 300; }
+        .ctm-plan-features { list-style: none; margin-bottom: 32px; }
+        .ctm-plan-features li { font-size: 0.83rem; color: var(--muted); padding: 7px 0; border-bottom: 1px solid #151510; font-weight: 300; }
         .ctm-plan-features li:first-child { color: #666; }
         .ctm-plan-features li::before { content: "— "; color: var(--gold); }
         .ctm-plan-btn {
           display: block; text-align: center; text-decoration: none;
           padding: 14px; font-family: 'DM Mono', monospace;
-          font-size: 0.72rem; letter-spacing: 0.08em;
-          transition: all 0.2s;
+          font-size: 0.72rem; letter-spacing: 0.08em; transition: all 0.2s;
         }
-        .ctm-plan-btn--gold {
-          background: var(--gold); color: #09090f;
-        }
+        .ctm-plan-btn--gold { background: var(--gold); color: #09090f; }
         .ctm-plan-btn--gold:hover { background: var(--gold-light); }
-        .ctm-plan-btn--outline {
-          border: 1px solid var(--border); color: var(--muted);
-        }
+        .ctm-plan-btn--outline { border: 1px solid var(--border); color: var(--muted); }
         .ctm-plan-btn--outline:hover { border-color: var(--gold); color: var(--gold); }
-        .ctm-pricing-note {
-          font-size: 0.75rem; color: var(--muted); text-align: center;
-          font-family: 'DM Mono', monospace; letter-spacing: 0.03em;
-        }
+        .ctm-pricing-note { font-size: 0.75rem; color: var(--muted); text-align: center; font-family: 'DM Mono', monospace; letter-spacing: 0.03em; }
 
-        /* ── FAQ ── */
         .ctm-faq-list { display: flex; flex-direction: column; }
-        .ctm-faq-item {
-          border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s;
-        }
+        .ctm-faq-item { border-bottom: 1px solid var(--border); cursor: pointer; }
         .ctm-faq-item:first-child { border-top: 1px solid var(--border); }
-        .ctm-faq-q {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 20px 0; gap: 24px;
-        }
+        .ctm-faq-q { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; gap: 24px; }
         .ctm-faq-q span:first-child { font-size: 0.9rem; color: var(--text); line-height: 1.5; }
-        .ctm-faq-icon {
-          font-family: 'DM Mono', monospace; font-size: 1.2rem;
-          color: var(--gold); flex-shrink: 0;
-        }
-        .ctm-faq-a {
-          padding: 0 0 20px; font-size: 0.85rem;
-          color: var(--muted); line-height: 1.75; font-weight: 300;
-        }
+        .ctm-faq-icon { font-family: 'DM Mono', monospace; font-size: 1.2rem; color: var(--gold); flex-shrink: 0; }
+        .ctm-faq-a { padding: 0 0 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.75; font-weight: 300; }
 
-        /* ── FOOTER ── */
         .ctm-footer { border-top: 1px solid var(--border); padding: 48px; }
         .ctm-footer-inner { max-width: 900px; margin: 0 auto; }
-        .ctm-footer-brand {
-          display: flex; align-items: baseline; gap: 10px; margin-bottom: 24px;
-        }
-        .ctm-footer-links {
-          display: flex; gap: 32px; margin-bottom: 32px; flex-wrap: wrap;
-        }
-        .ctm-footer-links a {
-          font-size: 0.8rem; color: var(--muted); text-decoration: none; transition: color 0.2s;
-        }
+        .ctm-footer-brand { display: flex; align-items: baseline; gap: 10px; margin-bottom: 24px; }
+        .ctm-footer-links { display: flex; gap: 32px; margin-bottom: 32px; flex-wrap: wrap; }
+        .ctm-footer-links a { font-size: 0.8rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
         .ctm-footer-links a:hover { color: var(--text); }
-        .ctm-footer-legal p {
-          font-size: 0.7rem; color: #333; line-height: 1.7; max-width: 640px;
-        }
-        .ctm-footer-legal a {
-          color: #444; text-decoration: none;
-        }
+        .ctm-footer-legal p { font-size: 0.7rem; color: #333; line-height: 1.7; max-width: 640px; }
+        .ctm-footer-legal a { color: #444; text-decoration: none; }
         .ctm-footer-legal a:hover { color: var(--muted); }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
           .ctm-nav { padding: 16px 24px; }
           .ctm-nav--scrolled { padding: 12px 24px; }
@@ -838,7 +790,7 @@ export default function Home() {
           .ctm-nav-links a { font-size: 1.1rem; }
           .ctm-hamburger { display: flex; z-index: 100; }
           .ctm-hero { padding: 100px 24px 60px; }
-          .ctm-hero-stats { flex-direction: column; gap: 0; }
+          .ctm-hero-stats { flex-direction: column; }
           .ctm-stat-divider { width: 80px; height: 1px; }
           .ctm-form { flex-direction: column; }
           .ctm-btn { width: 100%; }
@@ -852,7 +804,6 @@ export default function Home() {
         }
         @media (max-width: 480px) {
           .ctm-markets-grid { grid-template-columns: 1fr; }
-          .ctm-tr-grid { grid-template-columns: 1fr 1fr; }
         }
       `}</style>
     </main>
