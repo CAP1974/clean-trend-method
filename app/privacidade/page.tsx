@@ -19,7 +19,7 @@ export default function Privacidade() {
         <section className="legal-section">
           <h2 className="legal-h2">1. Responsável pelo Tratamento</h2>
           <p>Carlos Pinto, actividade independente, Portugal.</p>
-          <p>Contacto: geral.carlospinto@outlook.com</p>
+          <p>Contacto: carlospinto08@gmail.com</p>
           <p>Website: cleantrendmethod.com</p>
         </section>
 
