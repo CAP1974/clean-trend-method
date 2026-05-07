@@ -1,646 +1,692 @@
-"use client";
-import { useState, useEffect } from "react";
+'use client'
 
-const FAQS = [
-  {
-    q: "O CTM Pro é uma escola ou curso de investimento?",
-    a: "Não. O CTM Pro é uma comunidade privada de análise e curadoria de dados de mercado. Não somos escola, não damos formação certificada, não prestamos consultoria financeira. Organizamos informação para te ajudar a acompanhar o mercado com mais clareza."
-  },
-  {
-    q: "O CTM recomenda o que comprar ou vender?",
-    a: "Não. O CTM nunca dá recomendações de compra ou venda. Apresentamos dados, análises técnicas e contexto de mercado. A decisão de investir é sempre e exclusivamente tua."
-  },
-  {
-    q: "Para quem é o CTM Pro?",
-    a: "Para quem quer acompanhar acções e mercados financeiros sem depender de gurus, sem gastar em múltiplas ferramentas caras e sem tempo para filtrar o excesso de informação. Não é necessário ter experiência — a linguagem é simples e directa."
-  },
-  {
-    q: "Que mercados o CTM acompanha?",
-    a: "O CTM acompanha acções da NYSE e NASDAQ (EUA). A cobertura de mercados europeus (Portugal, Espanha, Alemanha) e Brasil está no roadmap e será expandida progressivamente."
-  },
-  {
-    q: "O que é o /analisa, /fundamentais e /carteira?",
-    a: "São comandos do bot CTM no Telegram. O /analisa devolve uma ficha técnica do ativo. O /fundamentais apresenta os dados financeiros da empresa. O /carteira regista os ativos que queres acompanhar e envia-te um radar diário automático."
-  },
-  {
-    q: "Posso cancelar quando quiser?",
-    a: "Sim, sem fidelização e sem penalização. Cancelas a qualquer momento pela plataforma de pagamento. O acesso mantém-se activo até ao fim do período já pago."
-  },
-  {
-    q: "Existe garantia de reembolso?",
-    a: "Sim. Oferecemos 7 dias de garantia. Se não ficares satisfeito nos primeiros 7 dias, devolvemos o valor integral sem perguntas."
-  },
-  {
-    q: "O CTM substitui o TradingView, Investing Pro ou FMP?",
-    a: "O CTM agrega e filtra informação dessas e outras plataformas para te entregar o essencial já organizado. Em vez de pagares €15 + €20 + €19 por mês em ferramentas separadas, acedes ao resultado desse trabalho por €9,99/mês."
-  },
-];
+import { useEffect } from 'react'
+import Link from 'next/link'
 
-const PROBLEMA = [
-  { icon: "◈", title: "Excesso de informação", desc: "Notícias, opiniões, gráficos, redes sociais — tudo ao mesmo tempo, sem contexto. Difícil saber o que realmente importa." },
-  { icon: "◉", title: "Ferramentas caras", desc: "TradingView Pro, Investing Pro, FMP, Bloomberg — cada uma custa €15 a €50/mês. A maioria das pessoas não precisa de tudo isso separado." },
-  { icon: "◆", title: "Falta de tempo", desc: "Acompanhar mercados exige horas diárias de análise. Para quem trabalha, é simplesmente impossível fazer isso sozinho." },
-  { icon: "◇", title: "Jargão técnico", desc: "RSI, EMA, P/E ratio, short squeeze — termos que afastam quem quer começar a acompanhar o mercado." },
-  { icon: "◎", title: "Ruído sem sinal", desc: "Gurus nas redes sociais, calls de compra, promessas de lucro fácil. Difícil separar análise séria de entretenimento financeiro." },
-  { icon: "◐", title: "Sem ponto de referência", desc: "Sem um método claro, as decisões tornam-se emocionais. Compra-se no pico por euforia, vende-se no fundo por medo." },
-];
-
-const SERVICOS = [
-  { icon: "⌘", title: "/analisa TICKER", badge: "100 pedidos/mês", desc: "Ficha técnica completa de qualquer ativo — EMA21, RSI14, volume, força relativa e leitura CTM em linguagem simples. Resultado em segundos." },
-  { icon: "◈", title: "/fundamentais TICKER", badge: "20 pedidos/mês", desc: "Dados financeiros da empresa — receita, margens, dívida, ROE, P/E e Score CTM 0–10. Interpretação clara sem jargão." },
-  { icon: "◎", title: "/carteira — Radar às 22h", badge: "10 ativos · diário", desc: "Regista os ativos que queres acompanhar. Todas as noites recebes um relatório automático com o estado de cada um: INTACTA / ATENÇÃO / COMPROMETIDA." },
-  { icon: "◉", title: "Morning Briefing", badge: "7h30 dias úteis", desc: "Todos os dias antes da abertura do mercado: dados dos índices, contexto geopolítico e macro, e o Princípio do Dia para manter o foco." },
-  { icon: "◆", title: "Radar CTM — Setups em observação", badge: "2–3x por semana", desc: "Ativos em zonas técnicas relevantes, com critérios de acompanhamento explicados. Não é uma recomendação — é informação organizada." },
-  { icon: "◇", title: "Market Pulse semanal", badge: "Sextas", desc: "Resumo semanal do estado geral do mercado — contexto, setores, o que mudou e o que continuar a vigiar." },
-  { icon: "◑", title: "Biblioteca CTM", badge: "Acesso permanente", desc: "Conceitos de análise técnica e fundamental explicados em linguagem simples. Para quem quer perceber o que está a ver, não só vê-lo." },
-  { icon: "◒", title: "Comunidade Pro", badge: "Telegram privado", desc: "Canal privado com outros membros, discussão de dados e contexto de mercado. Um espaço sério, sem ruído e sem calls." },
-];
-
-export default function Home() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
+export default function HomePage() {
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || loading) return;
-    setLoading(true);
-    try {
-      await fetch('/api/lista-espera', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      setSubmitted(true);
-    } catch {
-      setSubmitted(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add('visible')
+        })
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    )
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el))
+    document.querySelectorAll('.features-grid, .def-grid').forEach((grid) => {
+      grid.querySelectorAll('.feature, .def-card').forEach((card, i) => {
+        card.classList.add('reveal')
+        ;(card as HTMLElement).style.transitionDelay = `${i * 70}ms`
+        observer.observe(card)
+      })
+    })
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <main className="ctm-root">
-
-      {/* ── NAV ── */}
-      <nav className={`ctm-nav ${scrolled ? "ctm-nav--scrolled" : ""}`}>
-        <a href="#" className="ctm-nav-brand">
-          <span className="ctm-logo-mark">CTM</span>
-          <span className="ctm-logo-name">Clean Trend Method</span>
-        </a>
-        <div className={`ctm-nav-links ${menuOpen ? "open" : ""}`}>
-          <a href="#problema" onClick={() => setMenuOpen(false)}>O Problema</a>
-          <a href="#servicos" onClick={() => setMenuOpen(false)}>Serviços</a>
-          <a href="#nao-fazemos" onClick={() => setMenuOpen(false)}>O que não fazemos</a>
-          <a href="#precos" onClick={() => setMenuOpen(false)}>Preços</a>
-          <a href="#faq" onClick={() => setMenuOpen(false)}>FAQ</a>
-          <a href="#comunidade" className="ctm-nav-cta" onClick={() => setMenuOpen(false)}>Entrar na comunidade →</a>
-        </div>
-        <button className="ctm-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
-          <span /><span /><span />
-        </button>
-      </nav>
-
-      {/* ── HERO ── */}
-      <section className="ctm-hero">
-        <div className="ctm-hero-inner">
-          <div className="ctm-hero-badge">
-            <span className="ctm-pulse" />
-            Comunidade activa · PT · BR · ES · Europa · NYSE
-          </div>
-          <h1 className="ctm-h1">
-            O mercado recompensa<br />
-            <em>quem sabe o que está a ver.</em>
-          </h1>
-          <p className="ctm-hero-sub">
-            O CTM organiza dados, análises e contexto de mercado para te ajudar a acompanhar
-            acções com mais clareza. Não damos recomendações. A decisão é sempre tua.
-          </p>
-          <div className="ctm-hero-ctas">
-            <a href="#comunidade" className="ctm-btn-primary">Entrar na comunidade →</a>
-            <a href="#exemplo" className="ctm-btn-secondary">Ver exemplo de análise</a>
-          </div>
-          <a href="https://t.me/cleantrendmethod" target="_blank" rel="noopener" className="ctm-hero-telegram">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
-            Seguir canal gratuito no Telegram
-          </a>
-        </div>
-        <div className="ctm-hero-grid" aria-hidden="true" />
-      </section>
-
-      {/* ── PROBLEMA ── */}
-      <section className="ctm-section ctm-section--dark" id="problema">
-        <div className="ctm-section-inner">
-          <div className="ctm-label">O problema</div>
-          <h2 className="ctm-h2">Acompanhar o mercado<br />é mais difícil do que devia ser.</h2>
-          <p className="ctm-body">
-            O pequeno investidor enfrenta hoje um paradoxo: nunca houve tanta informação disponível,
-            mas nunca foi tão difícil saber o que realmente importa.
-          </p>
-          <div className="ctm-grid-3">
-            {PROBLEMA.map((item) => (
-              <div className="ctm-problema-card" key={item.title}>
-                <span className="ctm-feature-icon">{item.icon}</span>
-                <div className="ctm-feature-title">{item.title}</div>
-                <div className="ctm-feature-desc">{item.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── O QUE É ── */}
-      <section className="ctm-section" id="oque">
-        <div className="ctm-section-inner">
-          <div className="ctm-label">O que é o CTM</div>
-          <h2 className="ctm-h2">Uma comunidade privada<br />de curadoria de dados.</h2>
-          <div className="ctm-oque-grid">
-            <div className="ctm-oque-texto">
-              <p className="ctm-body-inline">
-                O CTM Pro reúne num único lugar o trabalho de acompanhar ferramentas, dados,
-                gráficos e contexto de mercado — e entrega-te esse trabalho já filtrado e organizado.
-              </p>
-              <p className="ctm-body-inline">
-                Em vez de pagares €15 + €20 + €19/mês em plataformas separadas e gastares horas
-                a tentar perceber o que está a acontecer, acedes por €9,99/mês a uma comunidade
-                que faz esse trabalho por ti.
-              </p>
-              <p className="ctm-body-inline">
-                Não somos escola. Não damos cursos. Não fazemos consultoria.
-                Somos um radar de dados e análises para quem quer acompanhar o mercado
-                com mais clareza e menos ruído.
-              </p>
-            </div>
-            <div className="ctm-oque-pilares">
-              {[
-                { n: "01", title: "Clareza", desc: "Transformamos excesso de informação em leitura simples e objectiva." },
-                { n: "02", title: "Tempo poupado", desc: "Já acompanhamos as ferramentas e os dados. Tu recebes o essencial filtrado." },
-                { n: "03", title: "Acesso acessível", desc: "€9,99/mês em vez de €60–100/mês em plataformas separadas." },
-                { n: "04", title: "Transparência", desc: "Explicamos sempre os critérios usados, os riscos e os cenários possíveis." },
-                { n: "05", title: "A decisão é tua", desc: "O CTM fornece contexto e dados. A responsabilidade é sempre individual." },
-              ].map((p) => (
-                <div className="ctm-pilar" key={p.n}>
-                  <div className="ctm-pilar-n">{p.n}</div>
-                  <div>
-                    <div className="ctm-pilar-title">{p.title}</div>
-                    <div className="ctm-pilar-desc">{p.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SERVIÇOS ── */}
-      <section className="ctm-section ctm-section--dark" id="servicos">
-        <div className="ctm-section-inner">
-          <div className="ctm-label">O que recebes</div>
-          <h2 className="ctm-h2">Tudo o que um investidor<br />precisa, organizado.</h2>
-          <p className="ctm-body">
-            O CTM Pro entrega diariamente dados, análises e contexto de mercado através
-            de bot no Telegram, canal privado e briefings automáticos.
-          </p>
-          <div className="ctm-grid-3">
-            {SERVICOS.map((s) => (
-              <div className={`ctm-feature-card ${["⌘","◈","◎"].includes(s.icon) ? "ctm-feature-card--featured" : ""}`} key={s.title}>
-                <span className="ctm-feature-icon">{s.icon}</span>
-                <div className="ctm-feature-title">{s.title}</div>
-                {s.badge && <div className="ctm-feature-badge">{s.badge}</div>}
-                <div className="ctm-feature-desc">{s.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── EXEMPLO ── */}
-      <section className="ctm-section" id="exemplo">
-        <div className="ctm-section-inner ctm-section-inner--narrow">
-          <div className="ctm-label">Exemplo de análise</div>
-          <h2 className="ctm-h2">O que recebes<br />numa ficha CTM.</h2>
-          <p className="ctm-body">
-            Cada análise apresenta os dados disponíveis de forma organizada, com os critérios
-            usados e os cenários possíveis — sem recomendações, sem preços-alvo, sem calls.
-          </p>
-          <div className="ctm-exemplo">
-            <div className="ctm-exemplo-header">
-              <div>
-                <div className="ctm-exemplo-ticker">NVDA — Nvidia Corporation</div>
-                <div className="ctm-exemplo-setor">Sector: Tecnologia · Semicondutores · NYSE</div>
-              </div>
-              <div className="ctm-exemplo-score">Score CTM<br /><span>7.4</span><small>/10</small></div>
-            </div>
-            <div className="ctm-exemplo-grid">
-              <div className="ctm-exemplo-bloco">
-                <div className="ctm-exemplo-bloco-title">Dados técnicos</div>
-                <div className="ctm-exemplo-linha"><span>Preço</span><span>875.40</span></div>
-                <div className="ctm-exemplo-linha"><span>EMA 21</span><span className="pos">851.20 ▲</span></div>
-                <div className="ctm-exemplo-linha"><span>RSI 14</span><span className="neu">62.3</span></div>
-                <div className="ctm-exemplo-linha"><span>Volume</span><span className="pos">1.2× média</span></div>
-              </div>
-              <div className="ctm-exemplo-bloco">
-                <div className="ctm-exemplo-bloco-title">Dados fundamentais</div>
-                <div className="ctm-exemplo-linha"><span>Revenue</span><span>+122% YoY</span></div>
-                <div className="ctm-exemplo-linha"><span>Margem líquida</span><span>55.8%</span></div>
-                <div className="ctm-exemplo-linha"><span>P/E ratio</span><span className="neu">38.2×</span></div>
-                <div className="ctm-exemplo-linha"><span>Dívida/Capital</span><span className="pos">Baixa</span></div>
-              </div>
-            </div>
-            <div className="ctm-exemplo-leitura">
-              <div className="ctm-exemplo-bloco-title">Leitura CTM</div>
-              <p>Estrutura técnica preservada com preço acima da zona de referência dinâmica (EMA21). Momentum positivo com volume acima da média. Dados fundamentais robustos com crescimento acelerado de receita. Zona de atenção: RSI em níveis elevados pode indicar abrandamento de curto prazo.</p>
-            </div>
-            <div className="ctm-exemplo-estado">
-              <span className="ctm-estado-badge ctm-estado--intacta">🟢 Zona técnica INTACTA</span>
-            </div>
-            <div className="ctm-exemplo-legal">
-              Esta análise é exclusivamente informativa e não constitui recomendação de investimento.
-              Os dados apresentados são públicos e não garantem qualquer resultado. A decisão de
-              investir é sempre da responsabilidade do utilizador.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── O QUE NÃO FAZEMOS ── */}
-      <section className="ctm-section ctm-section--dark" id="nao-fazemos">
-        <div className="ctm-section-inner ctm-section-inner--narrow">
-          <div className="ctm-label">Transparência</div>
-          <h2 className="ctm-h2">O que o CTM<br />não faz.</h2>
-          <p className="ctm-body">
-            A transparência é um dos pilares do CTM. Por isso deixamos claro o que não somos
-            e o que não fazemos — antes de te pedirmos que entres na comunidade.
-          </p>
-          <div className="ctm-naofaz-grid">
-            {[
-              "Não recomendamos a compra de qualquer activo",
-              "Não recomendamos a venda de qualquer activo",
-              "Não prestamos consultoria financeira ou de investimento",
-              "Não gerimos carteiras de valores mobiliários",
-              "Não prometemos qualquer rentabilidade ou resultado",
-              "Não somos escola, curso ou formação certificada",
-              "Não personalizamos recomendações com base no teu perfil",
-              "Não substituímos um profissional financeiro autorizado",
-            ].map((item, i) => (
-              <div className="ctm-naofaz-item" key={i}>
-                <span className="ctm-naofaz-icon">✕</span>
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-          <div className="ctm-naofaz-positivo">
-            <strong>O que fazemos:</strong> organizamos dados públicos de mercado, apresentamos análises técnicas e fundamentais informativas, e entregamos esse trabalho filtrado numa comunidade privada. A decisão é sempre tua.
-          </div>
-        </div>
-      </section>
-
-      {/* ── PREÇOS ── */}
-      <section className="ctm-section" id="precos">
-        <div className="ctm-section-inner">
-          <div className="ctm-label">Planos</div>
-          <h2 className="ctm-h2">Simples e transparente.</h2>
-          <p className="ctm-body">Sem fidelização. Cancelas quando quiseres. 7 dias de garantia.</p>
-          <div className="ctm-pricing-grid">
-
-            {/* FREE */}
-            <div className="ctm-plan">
-              <div className="ctm-plan-name">Free</div>
-              <div className="ctm-plan-price">€0</div>
-              <div className="ctm-plan-period">para sempre</div>
-              <ul className="ctm-plan-features">
-                <li>Canal Telegram público</li>
-                <li>Resumo semanal de mercado</li>
-                <li>Conceito simples da semana</li>
-                <li>Exemplo de análise CTM</li>
-                <li>1 /analisa por dia (FMP)</li>
-                <li>Morning Briefing básico</li>
-              </ul>
-              <a href="https://t.me/cleantrendmethod" className="ctm-plan-btn ctm-plan-btn--telegram" target="_blank" rel="noopener">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{marginRight: '8px', verticalAlign: 'middle'}}><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
-                Seguir no Telegram →
-              </a>
-            </div>
-
-            {/* PRO */}
-            <div className="ctm-plan ctm-plan--featured" id="comunidade">
-              <div className="ctm-plan-badge">Mais popular</div>
-              <div className="ctm-plan-name">Pro</div>
-              <div className="ctm-plan-price">€9,99</div>
-              <div className="ctm-plan-period">por mês · sem fidelização</div>
-              <div className="ctm-plan-savings">7 dias de garantia · cancela quando quiseres</div>
-              <ul className="ctm-plan-features">
-                <li>Tudo do Free, mais:</li>
-                <li>/analisa — 100 pedidos/mês</li>
-                <li>/fundamentais — 20 pedidos/mês</li>
-                <li>/carteira — 10 ativos · radar às 22h</li>
-                <li>Morning Briefing completo</li>
-                <li>Radar CTM — ativos em observação</li>
-                <li>Market Pulse semanal</li>
-                <li>Biblioteca CTM</li>
-                <li>Comunidade Pro Telegram</li>
-              </ul>
-              <a href="#lista-espera" className="ctm-plan-btn ctm-plan-btn--gold">
-                Entrar na comunidade →
-              </a>
-            </div>
-
-            {/* DASHBOARD */}
-            <div className="ctm-plan ctm-plan--soon">
-              <div className="ctm-plan-badge ctm-plan-badge--soon">Em breve</div>
-              <div className="ctm-plan-name">Dashboard CTM</div>
-              <div className="ctm-plan-price">€39,99</div>
-              <div className="ctm-plan-period">venda única · sem mensalidade</div>
-              <ul className="ctm-plan-features">
-                <li>Diário de trades pessoal</li>
-                <li>Calculadora de posição</li>
-                <li>Watchlist pessoal</li>
-                <li>Score CTM por ativo</li>
-                <li>Equity curve automática</li>
-                <li>Export Excel + JSON local</li>
-                <li>Dados ficam no teu computador</li>
-              </ul>
-              <div className="ctm-plan-btn ctm-plan-btn--disabled">
-                Disponível em breve
-              </div>
-            </div>
-          </div>
-          <p className="ctm-pricing-note">
-            Preços em EUR com IVA incluído. Pagamento seguro via Lemon Squeezy.
-            Membros do Brasil: equivalente em BRL à taxa do dia.
-          </p>
-        </div>
-      </section>
-
-      {/* ── LISTA ESPERA ── */}
-      <section className="ctm-section ctm-section--cta" id="lista-espera">
-        <div className="ctm-section-inner ctm-section-inner--center">
-          <div className="ctm-label">Começa hoje</div>
-          <h2 className="ctm-h2">Pronto para acompanhar<br />o mercado com clareza?</h2>
-          <p className="ctm-body ctm-body--center">
-            Junta-te à lista de espera. Avisamos quando o acesso Pro abrir.
-          </p>
-          {!submitted ? (
-            <form className="ctm-form" onSubmit={handleSubmit}>
-              <input
-                className="ctm-input"
-                type="email"
-                placeholder="O teu email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <button className="ctm-btn" type="submit" disabled={loading}>
-                {loading ? "A guardar..." : "Entrar na lista →"}
-              </button>
-            </form>
-          ) : (
-            <div className="ctm-success">✓ Estás na lista. Vemo-nos em breve.</div>
-          )}
-          <a href="https://t.me/cleantrendmethod" target="_blank" rel="noopener" className="ctm-hero-telegram">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 13.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
-            Ou seguir o canal gratuito no Telegram
-          </a>
-        </div>
-      </section>
-
-      {/* ── FAQ ── */}
-      <section className="ctm-section ctm-section--dark" id="faq">
-        <div className="ctm-section-inner ctm-section-inner--narrow">
-          <div className="ctm-label">Perguntas frequentes</div>
-          <h2 className="ctm-h2">Respostas directas.</h2>
-          <div className="ctm-faq-list">
-            {FAQS.map((f, i) => (
-              <div className={`ctm-faq-item ${openFaq === i ? "open" : ""}`} key={i}
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                <div className="ctm-faq-q">
-                  <span>{f.q}</span>
-                  <span className="ctm-faq-icon">{openFaq === i ? "−" : "+"}</span>
-                </div>
-                {openFaq === i && <div className="ctm-faq-a">{f.a}</div>}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="ctm-footer">
-        <div className="ctm-footer-inner">
-          <div className="ctm-footer-brand">
-            <span className="ctm-logo-mark">CTM</span>
-            <span className="ctm-logo-name">Clean Trend Method</span>
-          </div>
-          <div className="ctm-footer-links">
-            <a href="https://t.me/cleantrendmethod" target="_blank" rel="noopener">Telegram</a>
-            <a href="#servicos">Serviços</a>
-            <a href="#precos">Preços</a>
-            <a href="#faq">FAQ</a>
-          </div>
-          <div className="ctm-footer-legal-links">
-            <a href="/termos">Termos de Serviço</a>
-            <span>·</span>
-            <a href="/privacidade">Política de Privacidade</a>
-            <span>·</span>
-            <a href="/reembolso">Política de Reembolso</a>
-          </div>
-          <div className="ctm-footer-legal">
-            <p>
-              O CTM Pro é uma comunidade privada de análise e curadoria de dados de mercado.
-              Não presta consultoria financeira, não recomenda a compra ou venda de activos,
-              não gere carteiras e não promete qualquer rentabilidade. Toda a informação é
-              exclusivamente informativa. Investir comporta risco de perda de capital.
-            </p>
-            <p style={{ marginTop: "8px" }}>
-              © 2026 Clean Trend Method · Portugal · Actividade individual
-            </p>
-          </div>
-        </div>
-      </footer>
-
+    <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
-        :root {
-          --gold: #c8b97a; --gold-light: #ddd0a0;
-          --bg-dark: #060605; --bg-card: #0f0f0c;
-          --border: #1e1e16; --text: #f0ead8;
-          --muted: #777060; --subtle: #2a2a20;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Figtree:wght@300;400;500;600&display=swap');
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        .ctm-root { background-color: #09090f; color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-        .ctm-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; transition: background 0.3s, border-color 0.3s, padding 0.3s; border-bottom: 1px solid transparent; }
-        .ctm-nav--scrolled { background: rgba(9,9,15,0.95); backdrop-filter: blur(12px); border-bottom-color: var(--border); padding: 14px 48px; }
-        .ctm-nav-brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; }
-        .ctm-logo-mark { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: var(--gold); letter-spacing: 0.15em; }
-        .ctm-logo-name { font-size: 0.75rem; color: #444; letter-spacing: 0.05em; }
-        .ctm-nav-links { display: flex; align-items: center; gap: 28px; }
-        .ctm-nav-links a { font-size: 0.82rem; color: var(--muted); text-decoration: none; letter-spacing: 0.03em; transition: color 0.2s; }
-        .ctm-nav-links a:hover { color: var(--text); }
-        .ctm-nav-cta { color: var(--gold) !important; border: 1px solid #2a2a18 !important; padding: 8px 18px !important; font-family: 'DM Mono', monospace !important; font-size: 0.72rem !important; letter-spacing: 0.08em !important; }
-        .ctm-nav-cta:hover { background: #1a1a10 !important; }
-        .ctm-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
-        .ctm-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--muted); }
+        :root {
+          --ink:        #0E0E0B;
+          --ink-60:     rgba(14,14,11,0.6);
+          --ink-30:     rgba(14,14,11,0.3);
+          --ink-10:     rgba(14,14,11,0.1);
+          --paper:      #F5F2EC;
+          --paper-2:    #EDEAE2;
+          --gold:       #B8983E;
+          --gold-light: #D4AF5A;
+          --green:      #1A6B45;
+          --green-bg:   #EBF4EE;
+          --red-bg:     #FAEAEA;
+          --red:        #C0392B;
+          --amber-bg:   #FDF3E3;
+          --amber:      #946C00;
+          --serif:      'DM Serif Display', Georgia, serif;
+          --mono:       'DM Mono', monospace;
+          --sans:       'Figtree', sans-serif;
+          --r:          6px;
+          --r-lg:       12px;
+          --max:        1100px;
+        }
 
-        .ctm-hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 48px 80px; position: relative; overflow: hidden; }
-        .ctm-hero-grid { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(200,185,122,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(200,185,122,0.04) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%); }
-        .ctm-hero-inner { max-width: 800px; width: 100%; text-align: center; position: relative; z-index: 1; }
-        .ctm-hero-badge { display: inline-flex; align-items: center; gap: 8px; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.12em; color: var(--gold); border: 1px solid #222214; background: #0d0d08; padding: 6px 16px; border-radius: 2px; margin-bottom: 40px; }
-        .ctm-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
-        .ctm-h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.8rem, 6vw, 5.2rem); font-weight: 900; line-height: 1.07; color: #f5eedc; margin-bottom: 28px; }
-        .ctm-h1 em { color: var(--gold); font-style: italic; }
-        .ctm-hero-sub { font-size: 1.05rem; line-height: 1.75; color: var(--muted); font-weight: 300; max-width: 620px; margin: 0 auto 40px; }
-        .ctm-hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-        .ctm-btn-primary { background: var(--gold); color: #09090f; padding: 16px 32px; font-family: 'DM Mono', monospace; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em; text-decoration: none; transition: background 0.2s; }
-        .ctm-btn-primary:hover { background: var(--gold-light); }
-        .ctm-btn-secondary { border: 1px solid var(--border); color: var(--muted); padding: 16px 32px; font-family: 'DM Mono', monospace; font-size: 0.78rem; letter-spacing: 0.06em; text-decoration: none; transition: all 0.2s; }
-        .ctm-btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
-        .ctm-hero-telegram { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: #5b9bd5; text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; }
-        .ctm-hero-telegram:hover { color: #7ab3e0; }
+        body {
+          font-family: var(--sans);
+          background: var(--paper);
+          color: var(--ink);
+          font-size: 16px;
+          line-height: 1.6;
+          -webkit-font-smoothing: antialiased;
+          overflow-x: hidden;
+        }
 
-        .ctm-section { padding: 100px 48px; }
-        .ctm-section--dark { background: var(--bg-dark); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .ctm-section--cta { text-align: center; }
-        .ctm-section-inner { max-width: 960px; margin: 0 auto; }
-        .ctm-section-inner--narrow { max-width: 680px; margin: 0 auto; }
-        .ctm-section-inner--center { text-align: center; }
-        .ctm-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; }
-        .ctm-h2 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; line-height: 1.12; color: #f5eedc; margin-bottom: 20px; }
-        .ctm-h2 em { color: var(--gold); font-style: italic; }
-        .ctm-body { font-size: 1rem; line-height: 1.8; color: var(--muted); font-weight: 300; max-width: 580px; margin-bottom: 56px; }
-        .ctm-body-inline { font-size: 0.95rem; line-height: 1.8; color: var(--muted); font-weight: 300; margin-bottom: 20px; }
-        .ctm-body--center { margin-left: auto; margin-right: auto; }
+        /* NAV */
+        nav {
+          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 0 40px; height: 60px;
+          background: rgba(245,242,236,0.92);
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid var(--ink-10);
+        }
+        .nav-logo { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.1em; color: var(--ink); text-decoration: none; }
+        .nav-links { display: flex; gap: 28px; list-style: none; }
+        .nav-links a { font-size: 13px; color: var(--ink-60); text-decoration: none; letter-spacing: 0.02em; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--ink); }
+        .nav-cta { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; padding: 8px 18px; background: var(--ink); color: var(--paper); border: none; border-radius: var(--r); cursor: pointer; text-decoration: none; transition: background 0.2s, transform 0.1s; }
+        .nav-cta:hover { background: #2a2a24; transform: translateY(-1px); }
 
-        .ctm-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--border); background: var(--border); }
-        .ctm-problema-card { background: var(--bg-card); padding: 28px 24px; transition: background 0.2s; }
-        .ctm-problema-card:hover { background: #131310; }
-        .ctm-feature-card { background: var(--bg-card); padding: 28px 24px; transition: background 0.2s; }
-        .ctm-feature-card:hover { background: #131310; }
-        .ctm-feature-card--featured { background: #0e0e09; border-top: 2px solid var(--gold); }
-        .ctm-feature-card--featured:hover { background: #111108; }
-        .ctm-feature-icon { display: block; font-size: 1.1rem; color: var(--gold); margin-bottom: 14px; }
-        .ctm-feature-title { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-        .ctm-feature-badge { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--gold); letter-spacing: 0.08em; margin-bottom: 8px; }
-        .ctm-feature-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.65; font-weight: 300; }
+        /* HERO */
+        #hero {
+          min-height: 100vh;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          padding: 120px 40px 80px;
+          text-align: center;
+          position: relative; overflow: hidden;
+          max-width: 100%;
+        }
+        #hero::before {
+          content: '';
+          position: absolute; inset: 0;
+          background-image: linear-gradient(var(--ink-10) 1px, transparent 1px), linear-gradient(90deg, var(--ink-10) 1px, transparent 1px);
+          background-size: 60px 60px;
+          mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+          pointer-events: none;
+        }
+        .hero-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.7s 0.1s ease forwards; }
+        .hero-title { font-family: var(--serif); font-size: clamp(42px, 7vw, 80px); line-height: 1.05; color: var(--ink); max-width: 820px; margin: 0 auto 28px; opacity: 0; animation: fadeUp 0.7s 0.25s ease forwards; }
+        .hero-title em { font-style: italic; color: var(--gold); }
+        .hero-sub { font-size: 18px; font-weight: 300; color: var(--ink-60); max-width: 580px; margin: 0 auto 16px; line-height: 1.7; opacity: 0; animation: fadeUp 0.7s 0.4s ease forwards; }
 
-        .ctm-oque-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
-        .ctm-pilar { display: flex; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--border); }
-        .ctm-pilar:first-child { border-top: 1px solid var(--border); }
-        .ctm-pilar-n { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--gold); letter-spacing: 0.1em; padding-top: 2px; min-width: 24px; }
-        .ctm-pilar-title { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-        .ctm-pilar-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.6; font-weight: 300; }
+        .recompensa-block { max-width: 720px; margin: 0 auto 40px; background: var(--paper-2); border: 1px solid var(--ink-10); border-radius: var(--r-lg); padding: 28px 32px; opacity: 0; animation: fadeUp 0.7s 0.5s ease forwards; }
+        .rb-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+        .rb-quote { font-family: var(--serif); font-size: clamp(18px, 2.5vw, 24px); color: var(--ink); line-height: 1.3; margin-bottom: 20px; font-style: italic; }
+        .recompensa-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .rp-item { background: var(--paper); border: 1px solid var(--ink-10); border-radius: var(--r); padding: 12px 14px; text-align: left; }
+        .rp-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+        .rp-val { font-size: 13px; font-weight: 500; color: var(--ink); }
+        .rp-desc { font-size: 11px; color: var(--ink-60); margin-top: 2px; line-height: 1.4; }
 
-        .ctm-exemplo { border: 1px solid var(--border); background: var(--bg-card); }
-        .ctm-exemplo-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 28px; border-bottom: 1px solid var(--border); }
-        .ctm-exemplo-ticker { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #f5eedc; margin-bottom: 4px; }
-        .ctm-exemplo-setor { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.06em; }
-        .ctm-exemplo-score { text-align: right; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; }
-        .ctm-exemplo-score span { display: block; font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; color: var(--gold); line-height: 1; }
-        .ctm-exemplo-score small { font-size: 0.8rem; }
-        .ctm-exemplo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
-        .ctm-exemplo-bloco { background: var(--bg-card); padding: 20px 24px; }
-        .ctm-exemplo-bloco-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 14px; }
-        .ctm-exemplo-linha { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #151510; font-size: 0.82rem; }
-        .ctm-exemplo-linha span:first-child { color: var(--muted); }
-        .ctm-exemplo-linha span:last-child { color: var(--text); font-weight: 500; }
-        .ctm-exemplo-linha .pos { color: #5a7a3a; }
-        .ctm-exemplo-linha .neg { color: #8a3a3a; }
-        .ctm-exemplo-linha .neu { color: #7a6a3a; }
-        .ctm-exemplo-leitura { padding: 20px 24px; border-top: 1px solid var(--border); }
-        .ctm-exemplo-leitura p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; font-weight: 300; margin-top: 8px; }
-        .ctm-exemplo-estado { padding: 16px 24px; border-top: 1px solid var(--border); }
-        .ctm-estado-badge { font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 6px 16px; letter-spacing: 0.06em; }
-        .ctm-estado--intacta { background: #0a1a08; border: 1px solid #1a3a14; color: #5a7a3a; }
-        .ctm-exemplo-legal { padding: 14px 24px; border-top: 1px solid var(--border); font-size: 0.7rem; color: #444; line-height: 1.6; font-family: 'DM Mono', monospace; letter-spacing: 0.02em; }
+        .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.7s 0.65s ease forwards; }
+        .btn-primary { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.06em; padding: 14px 28px; background: var(--ink); color: var(--paper); border: none; border-radius: var(--r); cursor: pointer; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary:hover { background: #2a2a24; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(14,14,11,0.2); }
+        .btn-outline { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.06em; padding: 14px 28px; background: transparent; color: var(--ink); border: 1px solid var(--ink-30); border-radius: var(--r); cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-outline:hover { border-color: var(--ink); background: var(--ink-10); }
+        .hero-disclaimer { margin-top: 18px; font-size: 12px; color: var(--ink-30); letter-spacing: 0.02em; opacity: 0; animation: fadeUp 0.7s 0.8s ease forwards; }
 
-        .ctm-naofaz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); background: var(--border); margin-bottom: 24px; }
-        .ctm-naofaz-item { display: flex; align-items: flex-start; gap: 12px; background: var(--bg-dark); padding: 14px 18px; font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
-        .ctm-naofaz-icon { color: #5a3a3a; font-size: 0.8rem; flex-shrink: 0; margin-top: 2px; font-weight: 500; }
-        .ctm-naofaz-positivo { background: #0a1008; border: 1px solid #1a3014; padding: 20px 24px; font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
-        .ctm-naofaz-positivo strong { color: var(--gold); }
+        /* TICKER */
+        .ticker-strip { position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid var(--ink-10); padding: 12px 0; overflow: hidden; background: rgba(245,242,236,0.8); }
+        .ticker-track { display: flex; animation: ticker 30s linear infinite; width: max-content; }
+        .ticker-item { display: flex; align-items: center; gap: 10px; padding: 0 32px; font-family: var(--mono); font-size: 12px; color: var(--ink-60); white-space: nowrap; border-right: 1px solid var(--ink-10); }
+        .ticker-item .symbol { color: var(--ink); font-weight: 500; }
+        .ticker-item .up { color: var(--green); }
+        .ticker-item .down { color: var(--red); }
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-        .ctm-pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 24px; }
-        .ctm-plan { background: var(--bg-card); padding: 40px 32px; position: relative; }
-        .ctm-plan--featured { background: #0e0e09; border-left: 2px solid var(--gold); border-right: 2px solid var(--gold); }
-        .ctm-plan--soon { opacity: 0.7; }
-        .ctm-plan-badge { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; }
-        .ctm-plan-badge--soon { color: var(--muted); }
-        .ctm-plan-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: #f5eedc; margin-bottom: 12px; }
-        .ctm-plan-price { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; color: var(--gold); line-height: 1; }
-        .ctm-plan-period { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 8px; }
-        .ctm-plan-savings { font-size: 0.75rem; color: #5a7a4a; margin-bottom: 24px; font-weight: 300; }
-        .ctm-plan-features { list-style: none; margin-bottom: 32px; }
-        .ctm-plan-features li { font-size: 0.83rem; color: var(--muted); padding: 7px 0; border-bottom: 1px solid #151510; font-weight: 300; }
-        .ctm-plan-features li:first-child { color: #666; }
-        .ctm-plan-features li::before { content: "— "; color: var(--gold); }
-        .ctm-plan-btn { display: block; text-align: center; text-decoration: none; padding: 14px; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em; transition: all 0.2s; }
-        .ctm-plan-btn--gold { background: var(--gold); color: #09090f; }
-        .ctm-plan-btn--gold:hover { background: var(--gold-light); }
-        .ctm-plan-btn--telegram { background: #229ED9; color: #fff; display: flex; align-items: center; justify-content: center; }
-        .ctm-plan-btn--telegram:hover { background: #1a8bbf; }
-        .ctm-plan-btn--disabled { background: #1a1a14; color: #444; cursor: not-allowed; }
-        .ctm-pricing-note { font-size: 0.75rem; color: var(--muted); text-align: center; font-family: 'DM Mono', monospace; letter-spacing: 0.03em; }
+        /* SECTIONS */
+        section { padding: 100px 40px; max-width: var(--max); margin: 0 auto; }
+        .label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
+        .section-title { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); line-height: 1.1; color: var(--ink); margin-bottom: 20px; }
+        .section-body { font-size: 17px; font-weight: 300; color: var(--ink-60); line-height: 1.75; max-width: 580px; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+        .rule { border: none; border-top: 1px solid var(--ink-10); margin: 0; }
 
-        .ctm-form { display: flex; max-width: 480px; margin: 0 auto 14px; border: 1px solid var(--border); }
-        .ctm-input { flex: 1; background: #0d0d0a; border: none; outline: none; padding: 16px 20px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; }
-        .ctm-input::placeholder { color: #333; }
-        .ctm-btn { background: var(--gold); color: #09090f; border: none; padding: 16px 24px; font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
-        .ctm-btn:hover:not(:disabled) { background: var(--gold-light); }
-        .ctm-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-        .ctm-success { font-family: 'DM Mono', monospace; font-size: 0.88rem; color: var(--gold); padding: 20px; border: 1px solid var(--border); max-width: 480px; margin: 0 auto 14px; }
+        /* O QUE É */
+        .def-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 48px; background: var(--ink-10); border: 1px solid var(--ink-10); border-radius: var(--r-lg); overflow: hidden; }
+        .def-card { background: var(--paper); padding: 28px 24px; transition: background 0.2s; }
+        .def-card:hover { background: var(--paper-2); }
+        .def-card .icon { font-size: 22px; margin-bottom: 12px; }
+        .def-card h4 { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+        .def-card p { font-size: 13px; color: var(--ink-60); line-height: 1.6; }
+        .not-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 32px; }
+        .not-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--ink-60); padding: 12px 16px; background: var(--red-bg); border-radius: var(--r); border-left: 3px solid var(--red); }
+        .not-list li::before { content: '×'; color: var(--red); font-weight: 600; flex-shrink: 0; margin-top: 1px; }
+        .channel-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+        .ch-badge { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border: 1px solid var(--ink-10); border-radius: var(--r); font-size: 13px; color: var(--ink); text-decoration: none; background: var(--paper); transition: all 0.2s; }
+        .ch-badge:hover { border-color: var(--ink-30); background: var(--paper-2); transform: translateY(-1px); }
 
-        .ctm-faq-list { display: flex; flex-direction: column; }
-        .ctm-faq-item { border-bottom: 1px solid var(--border); cursor: pointer; }
-        .ctm-faq-item:first-child { border-top: 1px solid var(--border); }
-        .ctm-faq-q { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; gap: 24px; }
-        .ctm-faq-q span:first-child { font-size: 0.9rem; color: var(--text); line-height: 1.5; }
-        .ctm-faq-icon { font-family: 'DM Mono', monospace; font-size: 1.2rem; color: var(--gold); flex-shrink: 0; }
-        .ctm-faq-a { padding: 0 0 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.75; font-weight: 300; }
+        /* CARTEIRA */
+        #carteira { background: var(--ink); color: var(--paper); padding: 100px 40px; overflow: hidden; }
+        #carteira .inner { max-width: var(--max); margin: 0 auto; }
+        #carteira .label { color: var(--gold-light); }
+        #carteira .section-title { color: var(--paper); }
+        #carteira .section-body { color: rgba(245,242,236,0.6); }
 
-        .ctm-footer { border-top: 1px solid var(--border); padding: 48px; }
-        .ctm-footer-inner { max-width: 960px; margin: 0 auto; }
-        .ctm-footer-brand { display: flex; align-items: baseline; gap: 10px; margin-bottom: 24px; }
-        .ctm-footer-links { display: flex; gap: 32px; margin-bottom: 16px; flex-wrap: wrap; }
-        .ctm-footer-links a { font-size: 0.8rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
-        .ctm-footer-links a:hover { color: var(--text); }
-        .ctm-footer-legal-links { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
-        .ctm-footer-legal-links a { font-size: 0.72rem; color: #555; text-decoration: none; font-family: 'DM Mono', monospace; letter-spacing: 0.03em; transition: color 0.2s; }
-        .ctm-footer-legal-links a:hover { color: var(--gold); }
-        .ctm-footer-legal-links span { color: #333; font-size: 0.72rem; }
-        .ctm-footer-legal p { font-size: 0.7rem; color: #333; line-height: 1.7; max-width: 700px; }
+        .track-record-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 32px; background: rgba(245,242,236,0.08); border-radius: var(--r-lg); overflow: hidden; }
+        .tr-metric { background: rgba(245,242,236,0.03); padding: 24px; text-align: center; }
+        .tr-metric .value { font-family: var(--serif); font-size: 32px; color: var(--paper); display: block; margin-bottom: 4px; }
+        .tr-metric .vlabel { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,242,236,0.35); }
 
+        /* PINE CARDS */
+        .pine-wrapper { margin-top: 48px; display: flex; flex-direction: column; gap: 20px; }
+        .pine-analysis-card { background: #fff; border-radius: var(--r-lg); overflow: hidden; border: 1px solid rgba(245,242,236,0.1); }
+        .pine-card-header { background: rgba(245,242,236,0.05); border-bottom: 1px solid rgba(245,242,236,0.08); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .pine-card-title { font-family: var(--mono); font-size: 12px; font-weight: 500; color: rgba(245,242,236,0.9); letter-spacing: 0.06em; }
+        .pine-card-signal { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 20px; }
+        .sig-green { background: rgba(46,125,50,0.25); color: #4ade80; }
+        .sig-amber { background: rgba(230,81,0,0.25); color: #fbbf24; }
+        .sig-red   { background: rgba(183,28,28,0.25); color: #f87171; }
+        .pine-grids { display: grid; grid-template-columns: 1fr 1fr; }
+        .pine-panel { background: #FAFAF8; }
+        .pine-panel + .pine-panel { border-left: 1px solid #E8E5DE; }
+        .pine-panel-header { padding: 10px 16px 8px; border-bottom: 1px solid #E8E5DE; font-family: var(--mono); font-size: 11px; font-weight: 500; color: #666; letter-spacing: 0.06em; background: #F0EDE6; }
+        .pine-row { display: flex; align-items: center; padding: 7px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); gap: 8px; }
+        .pine-row:last-child { border-bottom: none; }
+        .pine-row-label { font-family: var(--mono); font-size: 11px; color: #555; min-width: 72px; flex-shrink: 0; }
+        .pine-bar-wrap { flex: 1; height: 10px; background: #E8E5DE; border-radius: 3px; overflow: hidden; }
+        .pine-bar { height: 100%; border-radius: 3px; transition: width 1s ease; }
+        .bar-g { background: #2E7D32; }
+        .bar-a { background: #E65100; }
+        .bar-r { background: #B71C1C; }
+        .pine-row-value { font-family: var(--mono); font-size: 11px; color: #222; text-align: right; min-width: 90px; font-weight: 500; }
+        .pine-alert { margin: 6px 16px 10px; padding: 8px 12px; background: #FFF3E0; border-left: 3px solid #E65100; border-radius: 4px; font-size: 11px; color: #7A4000; line-height: 1.5; }
+        .pine-alert.alert-green { background: #E8F5E9; border-color: #2E7D32; color: #1A4A1C; }
+        .pine-diagnostic { background: #F5F2EC; border-top: 1px solid #E8E5DE; padding: 14px 20px; }
+        .pine-diagnostic .diag-title { font-family: var(--mono); font-size: 11px; font-weight: 500; color: #444; letter-spacing: 0.06em; margin-bottom: 6px; display: flex; align-items: center; }
+        .pine-diagnostic p { font-size: 12px; color: #555; line-height: 1.65; }
+        .pine-diagnostic strong { color: #222; font-weight: 600; }
+        .pine-note { font-family: var(--mono); font-size: 11px; color: rgba(245,242,236,0.3); margin-top: 12px; letter-spacing: 0.03em; }
+
+        /* SERVIÇO */
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--ink-10); border: 1px solid var(--ink-10); border-radius: var(--r-lg); overflow: hidden; margin-top: 48px; }
+        .feature { background: var(--paper); padding: 32px 28px; transition: background 0.2s; }
+        .feature:hover { background: var(--paper-2); }
+        .feature-num { font-family: var(--mono); font-size: 11px; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 16px; display: block; }
+        .feature h3 { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+        .feature p { font-size: 13px; color: var(--ink-60); line-height: 1.65; }
+        .feature-tag { display: inline-block; margin-top: 14px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+        .tag-daily { background: var(--green-bg); color: var(--green); }
+        .tag-auto  { background: var(--amber-bg); color: var(--amber); }
+        .tag-pro   { background: var(--ink-10); color: var(--ink-60); }
+
+        /* EDUCAÇÃO */
+        .edu-strip { background: var(--paper-2); border-top: 1px solid var(--ink-10); border-bottom: 1px solid var(--ink-10); }
+        .edu-strip-inner { max-width: var(--max); margin: 0 auto; padding: 100px 40px; }
+        .edu-item { padding-top: 20px; border-top: 1px solid rgba(14,14,11,0.12); }
+        .edu-item + .edu-item { margin-top: 24px; }
+        .edu-item .edu-num { font-family: var(--mono); font-size: 10px; color: var(--ink-30); letter-spacing: 0.1em; margin-bottom: 8px; display: block; }
+        .edu-item h4 { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+        .edu-item p  { font-size: 13px; color: var(--ink-60); line-height: 1.65; }
+        .reality-check { background: var(--ink); color: var(--paper); border-radius: var(--r-lg); padding: 40px; font-size: 15px; line-height: 1.8; font-weight: 300; }
+        .reality-check strong { color: var(--gold-light); font-weight: 500; }
+
+        /* PREÇO */
+        #preco { text-align: center; padding: 100px 40px; max-width: var(--max); margin: 0 auto; }
+        .price-cards { display: grid; grid-template-columns: 1fr 1.1fr 1fr; gap: 16px; margin: 48px auto 0; max-width: 860px; }
+        .price-card { background: var(--paper); border: 1px solid var(--ink-10); border-radius: var(--r-lg); padding: 32px 28px; text-align: left; transition: transform 0.2s, box-shadow 0.2s; }
+        .price-card:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(14,14,11,0.1); }
+        .price-card.featured { background: var(--ink); border-color: var(--ink); color: var(--paper); transform: scale(1.02); }
+        .price-card.featured:hover { transform: scale(1.02) translateY(-3px); }
+        .price-badge { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 20px; display: inline-block; }
+        .price-card:not(.featured) .price-badge { background: var(--ink-10); color: var(--ink-60); }
+        .price-card.featured .price-badge { background: var(--gold); color: var(--ink); }
+        .price-amount { font-family: var(--serif); font-size: 42px; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+        .price-card.featured .price-amount { color: var(--paper); }
+        .price-period { font-size: 13px; color: var(--ink-60); margin-bottom: 24px; display: block; }
+        .price-card.featured .price-period { color: rgba(245,242,236,0.5); }
+        .price-features { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+        .price-features li { display: flex; gap: 8px; font-size: 13px; color: var(--ink-60); align-items: flex-start; }
+        .price-card.featured .price-features li { color: rgba(245,242,236,0.65); }
+        .price-features li::before { content: '—'; color: var(--gold); flex-shrink: 0; font-family: var(--mono); }
+        .founding-note { margin: 28px auto 0; max-width: 520px; font-size: 13px; color: var(--ink-60); background: var(--amber-bg); border: 1px solid rgba(148,108,0,0.2); border-radius: var(--r); padding: 14px 20px; line-height: 1.6; }
+        .founding-note strong { color: var(--amber); font-weight: 600; }
+
+        /* LEGAL / FOOTER */
+        .legal-bar { background: var(--paper-2); border-top: 1px solid var(--ink-10); padding: 28px 40px; text-align: center; }
+        .legal-bar p { font-size: 12px; color: var(--ink-30); max-width: 800px; margin: 0 auto; line-height: 1.7; }
+        .legal-bar a { color: inherit; text-decoration: underline; }
+        footer { border-top: 1px solid var(--ink-10); padding: 40px; display: flex; align-items: center; justify-content: space-between; max-width: var(--max); margin: 0 auto; }
+        .footer-logo { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink-60); }
+        .footer-links { display: flex; gap: 24px; list-style: none; }
+        .footer-links a { font-size: 12px; color: var(--ink-30); text-decoration: none; }
+        .footer-links a:hover { color: var(--ink); }
+
+        /* ANIMATIONS */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-          .ctm-nav { padding: 16px 24px; }
-          .ctm-nav--scrolled { padding: 12px 24px; }
-          .ctm-nav-links { display: none; flex-direction: column; align-items: flex-start; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(9,9,15,0.98); padding: 80px 32px 32px; gap: 24px; z-index: 99; }
-          .ctm-nav-links.open { display: flex; }
-          .ctm-nav-links a { font-size: 1.1rem; }
-          .ctm-hamburger { display: flex; z-index: 100; }
-          .ctm-hero { padding: 100px 24px 60px; }
-          .ctm-hero-ctas { flex-direction: column; align-items: center; }
-          .ctm-section { padding: 70px 24px; }
-          .ctm-grid-3 { grid-template-columns: 1fr; }
-          .ctm-oque-grid { grid-template-columns: 1fr; gap: 40px; }
-          .ctm-exemplo-grid { grid-template-columns: 1fr; }
-          .ctm-naofaz-grid { grid-template-columns: 1fr; }
-          .ctm-pricing-grid { grid-template-columns: 1fr; }
-          .ctm-plan--featured { border: 1px solid var(--gold); }
-          .ctm-form { flex-direction: column; }
-          .ctm-btn { width: 100%; }
-          .ctm-footer { padding: 40px 24px; }
+          nav { padding: 0 20px; }
+          .nav-links { display: none; }
+          #hero, section { padding: 80px 20px 60px; }
+          .two-col { grid-template-columns: 1fr; gap: 40px; }
+          .def-grid, .features-grid, .pine-grids { grid-template-columns: 1fr; }
+          .pine-panel + .pine-panel { border-left: none; border-top: 1px solid #E8E5DE; }
+          .price-cards { grid-template-columns: 1fr; max-width: 400px; }
+          .price-card.featured { transform: scale(1); }
+          .track-record-bar { grid-template-columns: 1fr 1fr; }
+          .recompensa-pillars { grid-template-columns: 1fr; }
+          footer { flex-direction: column; gap: 20px; text-align: center; }
+          #carteira { padding: 64px 20px; }
+          .edu-strip-inner { padding: 64px 20px; }
+          .legal-bar { padding: 24px 20px; }
         }
       `}</style>
-    </main>
-  );
+
+      {/* NAV */}
+      <nav>
+        <a href="#" className="nav-logo">CTM ·</a>
+        <ul className="nav-links">
+          <li><a href="#o-que-e">O Projecto</a></li>
+          <li><a href="#carteira">Carteira</a></li>
+          <li><a href="#servico">Serviço</a></li>
+          <li><a href="#educacao">Perspectiva</a></li>
+          <li><a href="#preco">Acesso</a></li>
+        </ul>
+        <a href="#preco" className="nav-cta">Tornar-me Membro</a>
+      </nav>
+
+      {/* HERO */}
+      <section id="hero">
+        <div className="hero-eyebrow">Clean Trend Method · Comunidade Lusófona de Análise de Mercados</div>
+        <h1 className="hero-title">
+          O mercado recompensa<br />quem sabe o que<br /><em>está a ver.</em>
+        </h1>
+        <p className="hero-sub">
+          Uma comunidade de literacia financeira e análise sistemática de mercados. Dados reais, carteira operacional pública e contexto honesto — para quem sempre quis investir com método.
+        </p>
+
+        <div className="recompensa-block">
+          <div className="rb-title">O que o mercado recompensa — e o que destrói consistência</div>
+          <div className="rb-quote">&ldquo;Não o mais rápido. Não o mais ousado. Quem compreende o que está a acontecer.&rdquo;</div>
+          <div className="recompensa-pillars">
+            {[
+              { tag: 'Recompensa', val: 'Disciplina',    desc: 'Critérios consistentes aplicados sem excepção' },
+              { tag: 'Recompensa', val: 'Contexto',      desc: 'Ler o que os dados mostram, não o que se espera ver' },
+              { tag: 'Recompensa', val: 'Paciência',     desc: 'Aguardar o momento certo em vez de perseguir movimento' },
+              { tag: 'Destrói',    val: 'Emoção',        desc: 'Decisões baseadas em FOMO, medo ou euforia de mercado' },
+              { tag: 'Destrói',    val: 'Ruído',         desc: 'Excesso de informação contraditória sem estrutura de análise' },
+              { tag: 'Destrói',    val: 'Impulsividade', desc: 'Agir sem critérios definidos ou ignorá-los sob pressão' },
+            ].map((item) => (
+              <div key={item.val} className="rp-item">
+                <div className="rp-label">{item.tag}</div>
+                <div className="rp-val">{item.val}</div>
+                <div className="rp-desc">{item.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="hero-actions">
+          <a href="#preco" className="btn-primary">Tornar-me Membro →</a>
+          <a href="#o-que-e" className="btn-outline">Conhecer o Projecto</a>
+        </div>
+        <p className="hero-disclaimer">
+          O CTM não presta consultoria financeira. Não emite sinais de compra ou venda.<br />
+          Toda a informação tem carácter educativo e informativo. A decisão de investir é sempre e exclusivamente do utilizador.
+        </p>
+
+        <div className="ticker-strip">
+          <div className="ticker-track">
+            {[
+              { s: 'PSI 20',    v: '6.842',   c: '+0,4%',  up: true },
+              { s: 'DAX 40',    v: '18.340',  c: '−0,2%',  up: false },
+              { s: 'IBEX 35',   v: '11.210',  c: '+0,8%',  up: true },
+              { s: 'CAC 40',    v: '8.050',   c: '−0,1%',  up: false },
+              { s: 'IBOVESPA',  v: '127.840', c: '+1,1%',  up: true },
+              { s: 'S&P 500',   v: '5.620',   c: '+0,3%',  up: true },
+              { s: 'NVDA',      v: '112,40',  c: '+2,1%',  up: true },
+              { s: 'EDP',       v: '3,82',    c: '−0,5%',  up: false },
+              { s: 'ASML',      v: '728,00',  c: '+1,4%',  up: true },
+            ].flatMap((t, i) => [0, 1].map((r) => (
+              <span key={`${i}-${r}`} className="ticker-item">
+                <span className="symbol">{t.s}</span>
+                {t.v}
+                <span className={t.up ? 'up' : 'down'}>{t.c}</span>
+              </span>
+            )))}
+          </div>
+        </div>
+      </section>
+
+      {/* O QUE É */}
+      <hr className="rule" />
+      <section id="o-que-e">
+        <div className="two-col">
+          <div className="reveal">
+            <span className="label">01 — O Projecto</span>
+            <h2 className="section-title">O que é o CTM</h2>
+            <p className="section-body">
+              O CTM — Clean Trend Method — é uma comunidade lusófona de literacia financeira e análise sistemática de mercados. A nossa função é organizar informação, estruturar contexto e apresentar dados de forma clara e acessível.<br /><br />
+              Não gerimos activos. Não emitimos recomendações personalizadas. Não prometemos resultados. Fornecemos o contexto que permite a cada membro observar o mercado com maior clareza e tomar decisões informadas de forma autónoma.
+            </p>
+            <div className="channel-row">
+              <a href="#" className="ch-badge"><span className="ch-icon">▶</span> YouTube</a>
+              <a href="#" className="ch-badge"><span className="ch-icon">✈</span> Telegram</a>
+              <a href="#" className="ch-badge"><span className="ch-icon">◎</span> Substack</a>
+              <a href="#" className="ch-badge"><span className="ch-icon">◑</span> WhatsApp</a>
+            </div>
+          </div>
+          <div className="reveal">
+            <span className="label" style={{ color: 'var(--red)' }}>Uma nota de clareza</span>
+            <h2 className="section-title" style={{ fontSize: 'clamp(26px, 3vw, 38px)' }}>O que não fazemos</h2>
+            <ul className="not-list">
+              <li>Consultoria financeira ou aconselhamento de investimento personalizado</li>
+              <li>Emissão de sinais, calls ou recomendações de compra e venda</li>
+              <li>Gestão de carteiras ou copy trading</li>
+              <li>Promessas de rentabilidade, retornos garantidos ou ganhos rápidos</li>
+              <li>Formação académica certificada em mercados financeiros</li>
+            </ul>
+          </div>
+        </div>
+        <div className="def-grid reveal">
+          {[
+            { icon: '🔭', title: 'Research Hub Lusófono',   body: 'Agregamos dados técnicos, fundamentais e macroeconómicos de múltiplas fontes profissionais e apresentamos de forma organizada e acessível em português.' },
+            { icon: '📊', title: 'Análise Sistemática',     body: 'Cada activo é avaliado segundo critérios objectivos e quantificáveis. Sem interpretações subjectivas. Sem decisões baseadas em emoção ou especulação.' },
+            { icon: '🤝', title: 'Transparência Integral',  body: 'A carteira operacional é pública. Os erros são documentados e publicados. O track record é verificável por qualquer membro desde o primeiro dia.' },
+            { icon: '🌍', title: 'Foco Ibérico e Lusófono', body: 'Cobertura dos mercados PSI, DAX, IBEX, CAC, B3 e NYSE — os mercados relevantes para investidores de Portugal, Espanha e Brasil.' },
+          ].map((c) => (
+            <div key={c.title} className="def-card">
+              <div className="icon">{c.icon}</div>
+              <h4>{c.title}</h4>
+              <p>{c.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CARTEIRA */}
+      <div id="carteira">
+        <div className="inner">
+          <span className="label">02 — Prova Concreta</span>
+          <div className="two-col">
+            <div>
+              <h2 className="section-title" style={{ color: 'var(--paper)' }}>Uma carteira real.<br />Documentada.<br />100% transparente.</h2>
+              <p className="section-body">
+                Após um período de preparação e validação metodológica, iniciámos as operações com uma carteira real, gerida segundo os critérios CTM.<br /><br />
+                Cada posição está documentada com os respectivos critérios técnicos de entrada. Cada resultado — positivo ou negativo — é publicado integralmente. O track record é público, verificável e actualizado mensalmente. Nada é omitido para preservar aparências.
+              </p>
+            </div>
+            <div>
+              <div className="track-record-bar">
+                {[
+                  { v: '100%', l: 'Transparência' },
+                  { v: '—',    l: 'Win rate' },
+                  { v: '—',    l: 'R médio' },
+                  { v: 'Pub.', l: 'Track record' },
+                ].map((m) => (
+                  <div key={m.l} className="tr-metric">
+                    <span className="value">{m.v}</span>
+                    <span className="vlabel">{m.l}</span>
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize: '11px', color: 'rgba(245,242,236,0.3)', marginTop: '10px', fontFamily: 'var(--mono)', letterSpacing: '0.04em' }}>
+                Track record publicado mensalmente. Inclui posições ganhadoras e perdedoras sem excepção.
+              </p>
+            </div>
+          </div>
+
+          {/* PINE CARDS */}
+          <div className="pine-wrapper reveal">
+            {/* Card CIEN */}
+            <div className="pine-analysis-card">
+              <div className="pine-card-header">
+                <span className="pine-card-title">CIEN — Leitura CTM · Gráfico actual</span>
+                <span className="pine-card-signal sig-amber">● ATENÇÃO</span>
+              </div>
+              <div className="pine-grids">
+                <div className="pine-panel">
+                  <div className="pine-panel-header">Pine 1 — Price Core v2.8.0</div>
+                  {[
+                    { l: 'PCore',      w: 92, v: 'PC Premium',  c: 'bar-g' },
+                    { l: 'Score/Pivot',w: 98, v: '98 | +2,2%',  c: 'bar-g' },
+                    { l: 'Stage',      w: 75, v: 'Stage 2',     c: 'bar-g' },
+                    { l: 'Setup',      w: 88, v: 'Clean Trend', c: 'bar-g' },
+                    { l: 'Ref.Risco',  w: 55, v: 'Curto 2,15%', c: 'bar-a' },
+                    { l: 'Manut.',     w: 80, v: 'Manter',      c: 'bar-g' },
+                  ].map((r) => (
+                    <div key={r.l} className="pine-row">
+                      <span className="pine-row-label">{r.l}</span>
+                      <div className="pine-bar-wrap"><div className={`pine-bar ${r.c}`} style={{ width: `${r.w}%` }} /></div>
+                      <span className="pine-row-value">{r.v}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pine-panel">
+                  <div className="pine-panel-header">Pine 2 — Volume Core v4.0</div>
+                  {[
+                    { l: 'ICT',      w: 87, v: 'SAUD. 87',      c: 'bar-g' },
+                    { l: 'Fluxo',    w: 90, v: 'POS | 90',      c: 'bar-g' },
+                    { l: 'Flux.Comp',w: 85, v: 'O90/V90/A90',   c: 'bar-g' },
+                    { l: 'ICB',      w: 59, v: 'FRACO 59',      c: 'bar-a' },
+                    { l: 'SMV',      w: 40, v: 'SEM MVCP 59',   c: 'bar-r' },
+                    { l: 'EFI',      w: 85, v: 'EFI+ | 85',     c: 'bar-g' },
+                    { l: 'VWAP',     w: 70, v: 'VWAP+ 0,9%',   c: 'bar-g' },
+                    { l: 'RVOL/PVO', w: 15, v: '0,15x Z-2,15', c: 'bar-r' },
+                  ].map((r) => (
+                    <div key={r.l} className="pine-row">
+                      <span className="pine-row-label">{r.l}</span>
+                      <div className="pine-bar-wrap"><div className={`pine-bar ${r.c}`} style={{ width: `${r.w}%` }} /></div>
+                      <span className="pine-row-value">{r.v}</span>
+                    </div>
+                  ))}
+                  <div className="pine-alert">PVO z-score −2,15 — volume muito abaixo da média histórica</div>
+                </div>
+              </div>
+              <div className="pine-diagnostic">
+                <div className="diag-title"><span style={{ marginRight: '6px' }}>⚡</span> Diagnóstico CTM — O paradoxo CIEN</div>
+                <p>ICT 87 + Fluxo 90 + EFI+ 85 + VWAP+ — <strong>estrutura técnica excelente.</strong><br />
+                ICB 59 + SMV 59 + RVOL 0,15x + PVO z−2,15 — <strong>sem interesse institucional no momento actual.</strong><br />
+                O activo apresenta fundamentos sólidos mas o mercado não demonstra convicção. Capital em compasso de espera.</p>
+              </div>
+            </div>
+
+            {/* Card Exemplo Favorável */}
+            <div className="pine-analysis-card">
+              <div className="pine-card-header">
+                <span className="pine-card-title">EXEMPLO — Contexto Favorável · Estrutura de referência</span>
+                <span className="pine-card-signal sig-green">● FAVORÁVEL</span>
+              </div>
+              <div className="pine-grids">
+                <div className="pine-panel">
+                  <div className="pine-panel-header">Pine 1 — Price Core v2.8.0</div>
+                  {[
+                    { l: 'PCore',      w: 95, v: 'PC Premium',  c: 'bar-g' },
+                    { l: 'Score/Pivot',w: 96, v: '96 | +1,8%',  c: 'bar-g' },
+                    { l: 'Stage',      w: 80, v: 'Stage 2',     c: 'bar-g' },
+                    { l: 'Setup',      w: 90, v: 'Clean Trend', c: 'bar-g' },
+                    { l: 'Ref.Risco',  w: 72, v: 'Curto 1,80%', c: 'bar-g' },
+                    { l: 'Manut.',     w: 85, v: 'Manter',      c: 'bar-g' },
+                  ].map((r) => (
+                    <div key={r.l} className="pine-row">
+                      <span className="pine-row-label">{r.l}</span>
+                      <div className="pine-bar-wrap"><div className={`pine-bar ${r.c}`} style={{ width: `${r.w}%` }} /></div>
+                      <span className="pine-row-value">{r.v}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pine-panel">
+                  <div className="pine-panel-header">Pine 2 — Volume Core v4.0</div>
+                  {[
+                    { l: 'ICT',      w: 91, v: 'SAUD. 91',    c: 'bar-g' },
+                    { l: 'Fluxo',    w: 94, v: 'POS | 94',    c: 'bar-g' },
+                    { l: 'Flux.Comp',w: 90, v: 'O90/V90/A95', c: 'bar-g' },
+                    { l: 'ICB',      w: 82, v: 'FORTE 82',    c: 'bar-g' },
+                    { l: 'SMV',      w: 78, v: 'MVCP+ | 78',  c: 'bar-g' },
+                    { l: 'EFI',      w: 88, v: 'EFI+ | 88',   c: 'bar-g' },
+                    { l: 'VWAP',     w: 76, v: 'VWAP+ 1,4%', c: 'bar-g' },
+                    { l: 'RVOL/PVO', w: 84, v: '1,8x Z+1,9', c: 'bar-g' },
+                  ].map((r) => (
+                    <div key={r.l} className="pine-row">
+                      <span className="pine-row-label">{r.l}</span>
+                      <div className="pine-bar-wrap"><div className={`pine-bar ${r.c}`} style={{ width: `${r.w}%` }} /></div>
+                      <span className="pine-row-value">{r.v}</span>
+                    </div>
+                  ))}
+                  <div className="pine-alert alert-green">Volume institucional confirmado — interesse de mercado elevado</div>
+                </div>
+              </div>
+              <div className="pine-diagnostic">
+                <div className="diag-title"><span style={{ marginRight: '6px' }}>✅</span> Diagnóstico CTM — Alinhamento completo</div>
+                <p>Estrutura técnica sólida com confirmação de volume institucional. <strong>ICT 91 + Fluxo 94 + ICB 82 + RVOL 1,8x</strong> — todos os indicadores convergem. Contexto favorável ao acompanhamento da posição com zona de referência intacta.</p>
+              </div>
+            </div>
+          </div>
+
+          <p className="pine-note">
+            Formato de análise CTM · Pine 1 (Price Core) + Pine 2 (Volume Core) · Publicado no canal Pro via sistema automatizado · Não constitui recomendação de investimento
+          </p>
+        </div>
+      </div>
+
+      {/* SERVIÇO */}
+      <section id="servico">
+        <div className="reveal">
+          <span className="label">03 — Serviço Mensal</span>
+          <h2 className="section-title">O que um membro recebe</h2>
+          <p className="section-body">Infraestrutura analítica profissional, automatizada com inteligência artificial, em português, para os mercados que interessam à comunidade lusófona.</p>
+        </div>
+        <div className="features-grid reveal">
+          {[
+            { n: '01', t: 'Morning Briefing',          p: 'Contexto de mercado diário às 7h30 — índices, situação macroeconómica relevante e enquadramento do dia antes da abertura das principais praças.', tag: 'tag-daily', tl: 'Diário · 7h30' },
+            { n: '02', t: 'Radar da Carteira',          p: 'O membro regista os seus activos e o sistema monitoriza-os automaticamente. Às 22h recebe o estado técnico de cada posição — intacta, atenção ou comprometida.', tag: 'tag-auto', tl: 'Automático · 22h' },
+            { n: '03', t: 'Análise Pine 1 + Pine 2',   p: 'Para cada activo acompanhado, uma leitura técnica completa com Price Core e Volume Core — o mesmo formato utilizado na carteira operacional CTM.', tag: 'tag-pro', tl: 'Dados Profissionais' },
+            { n: '04', t: 'Watchlist por Solicitação', p: 'O membro solicita análise de activos fora da carteira operacional. O sistema gera a leitura completa e publica no canal Pro. As ferramentas profissionais estão ao serviço do membro.', tag: 'tag-pro', tl: 'Canal Pro' },
+            { n: '05', t: 'Perspectiva Financeira Honesta', p: 'O que os grandes fundos de investimento praticam. O que a evidência empírica demonstra sobre mercados. Publicações regulares sem agenda comercial.', tag: 'tag-daily', tl: 'Regular' },
+            { n: '06', t: 'Track Record Público',      p: 'Publicado mensalmente com dados integrais — posições positivas e negativas, win rate, R médio e drawdown. Verificável por qualquer membro desde o início.', tag: 'tag-pro', tl: 'Verificável' },
+          ].map((f) => (
+            <div key={f.n} className="feature">
+              <span className="feature-num">{f.n}</span>
+              <h3>{f.t}</h3>
+              <p>{f.p}</p>
+              <span className={`feature-tag ${f.tag}`}>{f.tl}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* EDUCAÇÃO */}
+      <div className="edu-strip">
+        <div className="edu-strip-inner" id="educacao">
+          <div className="two-col">
+            <div className="reveal">
+              <span className="label">04 — Perspectiva de Mercado</span>
+              <h2 className="section-title">O que a evidência demonstra</h2>
+              <p className="section-body">Publicamos o que os dados mostram — incluindo o que é contrário ao senso comum e ao que os serviços de investimento de retalho habitualmente comunicam.</p>
+              <div style={{ marginTop: '32px' }}>
+                {[
+                  { n: 'TEMA 01', t: 'A realidade do trading a retalho',            p: 'Os dados de brokers europeus regulados mostram que mais de 70% dos investidores a retalho registam resultados negativos em produtos de curto prazo. Os números existem. Publicamo-los.' },
+                  { n: 'TEMA 02', t: 'O que os grandes gestores de capital praticam', p: 'Buffett, Dalio, Lynch e outros grandes alocadores de capital têm em comum disciplina de processo, gestão de risco rigorosa e horizontes temporais alargados — não previsões de curto prazo.' },
+                  { n: 'TEMA 03', t: 'Investimento vs especulação',                  p: 'A distinção não é académica — tem implicações directas na forma como se define risco, horizonte temporal e critérios de avaliação de cada posição.' },
+                  { n: 'TEMA 04', t: 'Gestão comportamental e consistência',         p: 'A maioria das perdas não resulta de análise incorrecta. Resulta de comportamento inconsistente sob pressão de mercado — um tema sistematicamente ignorado pelos serviços de retalho.' },
+                ].map((item, i) => (
+                  <div key={item.n} className="edu-item" style={i > 0 ? { marginTop: '24px' } : {}}>
+                    <span className="edu-num">{item.n}</span>
+                    <h4>{item.t}</h4>
+                    <p>{item.p}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="reveal">
+              <div className="reality-check">
+                <strong>Uma nota sobre a origem deste projecto</strong><br /><br />
+                O CTM foi criado a partir de uma experiência directa: a dificuldade de aceder a ferramentas de análise profissional sem incorrer em custos de €100–300 mensais fragmentados por múltiplos serviços, maioritariamente em inglês e desenhados para outros mercados.<br /><br />
+                A comunidade lusófona de investidores merece acesso às mesmas ferramentas e ao mesmo nível de análise — apresentados de forma acessível, em português, com transparência total sobre metodologia e resultados.<br /><br />
+                <strong>€9,99 por mês não é uma estratégia de preço. É uma posição sobre o que este serviço deve ser.</strong>
+              </div>
+              <div style={{ marginTop: '24px', padding: '24px', border: '1px solid var(--ink-10)', borderRadius: 'var(--r-lg)' }}>
+                <p style={{ fontSize: '13px', color: 'var(--ink-60)', lineHeight: '1.7' }}>
+                  <strong style={{ color: 'var(--ink)', fontSize: '14px', display: 'block', marginBottom: '8px' }}>Compromissos editoriais</strong>
+                  O CTM não publica previsões de preço com datas específicas. Não apresenta resultados seleccionados. Não remove análises negativas do arquivo. Não cria conteúdo cujo objectivo principal seja gerar engagement sem substância analítica.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* PREÇO */}
+      <section id="preco">
+        <span className="label">05 — Acesso</span>
+        <h2 className="section-title">Transparente. Sem surpresas.</h2>
+        <p className="section-body" style={{ margin: '0 auto' }}>Sem período mínimo de permanência. Sem renovação automática surpresa. Sem custos adicionais não comunicados.</p>
+
+        <div className="price-cards reveal">
+          <div className="price-card">
+            <span className="price-badge">Canal Gratuito</span>
+            <div className="price-amount">€0</div>
+            <span className="price-period">acesso permanente</span>
+            <ul className="price-features">
+              <li>Canal Telegram público</li>
+              <li>Morning Briefing resumido</li>
+              <li>1 análise /analisa por dia</li>
+              <li>Perspectiva financeira honesta</li>
+              <li>Track record público mensal</li>
+              <li>Substack — artigos educativos (introdução gratuita de cada publicação)</li>
+              <li>Telegram serviço e carteira — disponível à unidade</li>
+            </ul>
+          </div>
+          <div className="price-card featured">
+            <span className="price-badge">Membro Pro</span>
+            <div className="price-amount">€9,99</div>
+            <span className="price-period">por mês · sem compromisso</span>
+            <ul className="price-features">
+              <li>Tudo do canal gratuito</li>
+              <li>Morning Briefing completo</li>
+              <li>Radar diário da carteira pessoal</li>
+              <li>100 análises /analisa por mês</li>
+              <li>Leitura Pine 1 + Pine 2 completa</li>
+              <li>Tabelas de análise institucional</li>
+              <li>Watchlist por solicitação</li>
+              <li>Canal Pro Telegram — carteira e serviço completo</li>
+              <li>Substack Pro — publicações completas (versão gratuita parcial, acesso total para membros)</li>
+              <li>Discord Pro</li>
+            </ul>
+          </div>
+          <div className="price-card">
+            <span className="price-badge">Membros Fundadores</span>
+            <div className="price-amount">€4,99</div>
+            <span className="price-period">primeiros 3 meses · 50 lugares</span>
+            <ul className="price-features">
+              <li>Acesso completo ao plano Pro</li>
+              <li>50% de desconto por 3 meses</li>
+              <li>Acesso prioritário a novas funcionalidades</li>
+              <li>Participação no desenvolvimento do produto</li>
+              <li>Após 3 meses: €9,99/mês</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="founding-note reveal">
+          <strong>Programa de Membros Fundadores — 50 lugares disponíveis</strong><br />
+          O objectivo deste programa é validar o serviço com utilizadores reais antes do lançamento público. Em contrapartida do preço reduzido, a experiência dos membros fundadores informa directamente o desenvolvimento das funcionalidades seguintes.
+        </div>
+
+        <div style={{ marginTop: '32px', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a href="#" className="btn-primary">Tornar-me Membro →</a>
+          <a href="https://t.me/cleantrendmethod" className="btn-outline">Aceder ao Canal Gratuito</a>
+        </div>
+      </section>
+
+      {/* AVISO LEGAL */}
+      <div className="legal-bar">
+        <p>
+          <strong>Aviso Legal:</strong> O CTM — Clean Trend Method não presta consultoria financeira, não gere activos de terceiros e não emite recomendações de investimento personalizadas. Toda a informação publicada tem carácter exclusivamente educativo e informativo. Os dados de mercado, análises técnicas e fundamentais apresentados não constituem aconselhamento financeiro nem devem ser interpretados como tal. Qualquer decisão de investimento é da exclusiva responsabilidade do utilizador. O investimento em mercados financeiros envolve risco de perda parcial ou total do capital investido. Resultados passados não constituem garantia de resultados futuros. ·{' '}
+          <Link href="/termos">Termos e Condições</Link> ·{' '}
+          <Link href="/privacidade">Privacidade</Link> ·{' '}
+          <Link href="/reembolso">Reembolso</Link>
+        </p>
+      </div>
+
+      {/* FOOTER */}
+      <footer>
+        <span className="footer-logo">CTM · Clean Trend Method · cleantrendmethod.com</span>
+        <ul className="footer-links">
+          <li><Link href="/termos">Termos e Condições</Link></li>
+          <li><Link href="/privacidade">Política de Privacidade</Link></li>
+          <li><Link href="/reembolso">Política de Reembolso</Link></li>
+          <li><a href="https://t.me/cleantrendmethod">@cleantrendmethod</a></li>
+        </ul>
+      </footer>
+    </>
+  )
 }
