@@ -608,9 +608,28 @@ export default function HomePage() {
       <section id="preco">
         <span className="label">05 — Acesso</span>
         <h2 className="section-title">Transparente. Sem surpresas.</h2>
-        <p className="section-body" style={{ margin: '0 auto' }}>Sem período mínimo de permanência. Sem renovação automática surpresa. Sem custos adicionais não comunicados.</p>
+        <p className="section-body" style={{ margin: '0 auto' }}>Quatro opções de acesso. Dois programas de lançamento com lugares limitados. Sem custos ocultos.</p>
 
-        <div className="price-cards reveal">
+        {/* Cupões */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', maxWidth: '680px', margin: '32px auto 0' }}>
+          <div style={{ background: 'var(--amber-bg)', border: '1px solid rgba(148,108,0,0.25)', borderRadius: 'var(--r-lg)', padding: '18px 20px' }}>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--amber)', marginBottom: '8px' }}>Cupão · 30 lugares</div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '22px', fontWeight: 500, color: 'var(--ink)', letterSpacing: '0.04em', marginBottom: '4px' }}>CTM50</div>
+            <div style={{ fontSize: '13px', color: 'var(--ink-60)', lineHeight: '1.5' }}>50% de desconto nos primeiros 3 meses. Aplica no checkout mensal — paga €4,99/mês durante 3 meses, depois €9,99/mês.</div>
+            <div style={{ marginTop: '10px', fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--amber)' }}>⏳ Só 30 utilizações disponíveis</div>
+          </div>
+          <div style={{ background: 'var(--green-bg)', border: '1px solid rgba(26,107,69,0.25)', borderRadius: 'var(--r-lg)', padding: '18px 20px' }}>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--green)', marginBottom: '8px' }}>Cupão · 50 lugares</div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '22px', fontWeight: 500, color: 'var(--ink)', letterSpacing: '0.04em', marginBottom: '4px' }}>CTM3M</div>
+            <div style={{ fontSize: '13px', color: 'var(--ink-60)', lineHeight: '1.5' }}>Acesso trimestral a €14,97 — pagamento único. Equivale a €4,99/mês. Aplica no checkout trimestral.</div>
+            <div style={{ marginTop: '10px', fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--green)' }}>⏳ Só 50 lugares disponíveis</div>
+          </div>
+        </div>
+
+        {/* 4 cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.05fr 1.05fr 1fr', gap: '12px', margin: '32px auto 0', maxWidth: '1060px' }} className="reveal">
+
+          {/* FREE */}
           <div className="price-card">
             <span className="price-badge">Canal Gratuito</span>
             <div className="price-amount">€0</div>
@@ -621,11 +640,64 @@ export default function HomePage() {
               <li>1 análise /analisa por dia</li>
               <li>Perspectiva financeira honesta</li>
               <li>Track record público mensal</li>
-              <li>Substack — artigos educativos (introdução gratuita de cada publicação)</li>
+              <li>Substack — introdução gratuita de cada publicação</li>
               <li>Telegram serviço e carteira — disponível à unidade</li>
             </ul>
+            <div style={{ marginTop: '20px' }}>
+              <a href="https://t.me/cleantrendmethod" className="btn-outline" style={{ width: '100%', textAlign: 'center', fontSize: '12px', padding: '10px 0', display: 'block' }}>Entrar grátis →</a>
+            </div>
           </div>
-          <div className="price-card featured">
+
+          {/* CTM50 */}
+          <div className="price-card" style={{ border: '1.5px solid var(--amber)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: 'var(--amber)', color: 'var(--ink)', fontFamily: 'var(--mono)', fontSize: '10px', fontWeight: 500, padding: '3px 12px', borderRadius: '20px', whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>30 LUGARES · CUPÃO CTM50</div>
+            <span className="price-badge" style={{ background: 'var(--amber-bg)', color: 'var(--amber)' }}>Mensal — Fundador</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '2px' }}>
+              <div className="price-amount">€4,99</div>
+              <div style={{ fontSize: '13px', color: 'var(--ink-30)', textDecoration: 'line-through' }}>€9,99</div>
+            </div>
+            <span className="price-period">por mês · primeiros 3 meses<br />depois €9,99/mês · cancela quando quiseres</span>
+            <ul className="price-features">
+              <li>Tudo do canal gratuito</li>
+              <li>Morning Briefing completo</li>
+              <li>Radar diário da carteira pessoal</li>
+              <li>100 análises /analisa por mês</li>
+              <li>Leitura Pine 1 + Pine 2 completa</li>
+              <li>Tabelas de análise institucional</li>
+              <li>Watchlist por solicitação</li>
+              <li>Canal Pro Telegram + Discord</li>
+              <li>Substack Pro — publicações completas</li>
+            </ul>
+            <div style={{ marginTop: '20px' }}>
+              <a href="https://buy.stripe.com/4gM9ASfErf2x81s61P8Zq00" className="btn-primary" style={{ width: '100%', textAlign: 'center', fontSize: '12px', padding: '10px 0', display: 'block', background: 'var(--amber)' }}>Assinar com CTM50 →</a>
+            </div>
+          </div>
+
+          {/* CTM3M */}
+          <div className="price-card featured" style={{ border: '1.5px solid var(--gold)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: 'var(--gold)', color: 'var(--ink)', fontFamily: 'var(--mono)', fontSize: '10px', fontWeight: 500, padding: '3px 12px', borderRadius: '20px', whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>50 LUGARES · CUPÃO CTM3M</div>
+            <span className="price-badge">Trimestral — Fundador</span>
+            <div className="price-amount">€14,97</div>
+            <span className="price-period">pagamento único · 3 meses de acesso<br />equivale a €4,99/mês</span>
+            <ul className="price-features">
+              <li>Tudo do canal gratuito</li>
+              <li>Morning Briefing completo</li>
+              <li>Radar diário da carteira pessoal</li>
+              <li>100 análises /analisa por mês</li>
+              <li>Leitura Pine 1 + Pine 2 completa</li>
+              <li>Tabelas de análise institucional</li>
+              <li>Watchlist por solicitação</li>
+              <li>Canal Pro Telegram + Discord</li>
+              <li>Substack Pro — publicações completas</li>
+              <li>Acesso prioritário a novas funcionalidades</li>
+            </ul>
+            <div style={{ marginTop: '20px' }}>
+              <a href="https://buy.stripe.com/28EaEWdwj2fLepQfCp8Zq01" className="btn-primary" style={{ width: '100%', textAlign: 'center', fontSize: '12px', padding: '10px 0', display: 'block' }}>Assinar com CTM3M →</a>
+            </div>
+          </div>
+
+          {/* PRO MENSAL */}
+          <div className="price-card">
             <span className="price-badge">Membro Pro</span>
             <div className="price-amount">€9,99</div>
             <span className="price-period">por mês · sem compromisso</span>
@@ -637,32 +709,25 @@ export default function HomePage() {
               <li>Leitura Pine 1 + Pine 2 completa</li>
               <li>Tabelas de análise institucional</li>
               <li>Watchlist por solicitação</li>
-              <li>Canal Pro Telegram — carteira e serviço completo</li>
-              <li>Substack Pro — publicações completas (versão gratuita parcial, acesso total para membros)</li>
-              <li>Discord Pro</li>
+              <li>Canal Pro Telegram + Discord</li>
+              <li>Substack Pro — publicações completas</li>
             </ul>
+            <div style={{ marginTop: '20px' }}>
+              <a href="https://buy.stripe.com/4gM9ASfErf2x81s61P8Zq00" className="btn-primary" style={{ width: '100%', textAlign: 'center', fontSize: '12px', padding: '10px 0', display: 'block' }}>Assinar →</a>
+            </div>
           </div>
-          <div className="price-card">
-            <span className="price-badge">Membros Fundadores</span>
-            <div className="price-amount">€4,99</div>
-            <span className="price-period">primeiros 3 meses · 50 lugares</span>
-            <ul className="price-features">
-              <li>Acesso completo ao plano Pro</li>
-              <li>50% de desconto por 3 meses</li>
-              <li>Acesso prioritário a novas funcionalidades</li>
-              <li>Participação no desenvolvimento do produto</li>
-              <li>Após 3 meses: €9,99/mês</li>
-            </ul>
-          </div>
+
         </div>
 
-        <div className="founding-note reveal">
-          <strong>Programa de Membros Fundadores — 50 lugares disponíveis</strong><br />
-          O objectivo deste programa é validar o serviço com utilizadores reais antes do lançamento público. Em contrapartida do preço reduzido, a experiência dos membros fundadores informa directamente o desenvolvimento das funcionalidades seguintes.
+        <div className="founding-note reveal" style={{ maxWidth: '680px' }}>
+          <strong>Como usar os cupões de lançamento</strong><br />
+          No checkout Stripe introduz o cupão antes de finalizar o pagamento.<br />
+          <strong>CTM50</strong> — aplica no plano mensal → €4,99/mês durante 3 meses (30 lugares) ·{' '}
+          <strong>CTM3M</strong> — aplica no plano trimestral → €14,97 por 3 meses de acesso (50 lugares).<br />
+          Quando os lugares esgotam, os cupões são desactivados automaticamente.
         </div>
 
-        <div style={{ marginTop: '32px', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="#" className="btn-primary">Tornar-me Membro →</a>
+        <div style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <a href="https://t.me/cleantrendmethod" className="btn-outline">Aceder ao Canal Gratuito</a>
         </div>
       </section>
