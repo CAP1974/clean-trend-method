@@ -31,10 +31,10 @@ const TICKERS = [
 ]
 
 const PRODUTO_SCREENS = [
-  { src: '/assets/ctm-pro-entrada.png',     alt: 'CTM PRO — Quadro de Entrada ALAB',    label: 'Quadro de Entrada', url: 'ctm pro · quadro de entrada · ALAB · NASDAQ' },
-  { src: '/assets/ctm-pro-saida.png',       alt: 'CTM PRO — Quadro de Saída KGS',       label: 'Quadro de Saída',   url: 'ctm pro · quadro de saída · KGS · NYSE' },
-  { src: '/assets/ctm-pro-watchlist.png',   alt: 'CTM PRO — Watchlist',                  label: 'Watchlist',          url: 'ctm pro · watchlist · protocolo CTM v10 com IA' },
-  { src: '/assets/ctm-pro-performance.png', alt: 'CTM PRO — Performance',                label: 'Performance',        url: 'ctm pro · performance · Triple Seven Capital · Mai 2026' },
+  { src: '/ctm-pro-entrada.png',     alt: 'CTM PRO — Quadro de Entrada ALAB',    label: 'Quadro de Entrada', url: 'ctm pro · quadro de entrada · ALAB · NASDAQ' },
+  { src: '/ctm-pro-saida.png',       alt: 'CTM PRO — Quadro de Saída KGS',       label: 'Quadro de Saída',   url: 'ctm pro · quadro de saída · KGS · NYSE' },
+  { src: '/ctm-pro-watchlist.png',   alt: 'CTM PRO — Watchlist',                  label: 'Watchlist',          url: 'ctm pro · watchlist · protocolo CTM v10 com IA' },
+  { src: '/ctm-pro-performance.png', alt: 'CTM PRO — Performance',                label: 'Performance',        url: 'ctm pro · performance · Triple Seven Capital · Mai 2026' },
 ]
 
 const REWARDS = [
