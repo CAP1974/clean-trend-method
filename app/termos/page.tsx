@@ -1,128 +1,212 @@
-export default function Termos() {
-  return (
-    <main className="legal-root">
-      <div className="legal-inner">
+import Link from 'next/link'
+import type { Metadata } from 'next'
 
-        <div className="legal-header">
-          <a href="/" className="legal-back">← CTM Pro</a>
-          <div className="legal-logo">CTM</div>
-        </div>
-
-        <h1 className="legal-h1">Termos de Serviço</h1>
-        <p className="legal-meta">Última actualização: Maio de 2026 · cleantrendmethod.com</p>
-
-        <div className="legal-aviso">
-          O CTM Pro é uma comunidade privada de análise e curadoria de dados de mercado.
-          Não presta consultoria financeira, não recomenda compra ou venda de activos,
-          não gere carteiras e não promete qualquer rentabilidade.
-        </div>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">1. Identificação do Prestador</h2>
-          <p>O CTM Pro (Clean Trend Method) é um serviço prestado a título individual por Carlos Pinto, residente em Portugal, operando sob o regime de actividade independente (recibos verdes), acessível através do website cleantrendmethod.com.</p>
-          <p>Contacto: carlospinto08@gmail.com</p>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">2. Descrição do Serviço</h2>
-          <p>O CTM Pro é uma comunidade privada de análise e curadoria de dados de mercado financeiro. O serviço destina-se a pessoas que pretendem acompanhar acções e mercados financeiros com mais clareza, sem depender de múltiplas ferramentas pagas.</p>
-          <p>O CTM Pro inclui, consoante o plano subscrito:</p>
-          <ul>
-            <li>Radar diário de ativos em observação</li>
-            <li>Fichas técnicas e fundamentais informativas</li>
-            <li>Morning Briefing diário com dados de mercado</li>
-            <li>Acesso ao bot de análise via Telegram (/analisa, /fundamentais, /carteira)</li>
-            <li>Comunidade privada no Telegram</li>
-            <li>Biblioteca CTM com conteúdo de apoio à compreensão de dados</li>
-          </ul>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">3. O que o CTM Pro NÃO é</h2>
-          <p>O CTM Pro não presta qualquer dos seguintes serviços:</p>
-          <ul>
-            <li>Consultoria financeira ou de investimento</li>
-            <li>Gestão de carteiras de valores mobiliários</li>
-            <li>Recomendações de compra ou venda de activos financeiros</li>
-            <li>Aconselhamento financeiro personalizado</li>
-            <li>Formação financeira certificada</li>
-            <li>Serviço de sinais de trading</li>
-            <li>Garantia ou promessa de rentabilidade</li>
-          </ul>
-          <p>Toda a informação disponibilizada pelo CTM Pro tem carácter exclusivamente informativo e analítico. A decisão de investir ou desinvestir é sempre e exclusivamente da responsabilidade do utilizador.</p>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">4. Acesso e Conta</h2>
-          <p>O acesso ao CTM Pro é feito através do canal privado no Telegram, após confirmação de pagamento via Lemon Squeezy. O utilizador é responsável por manter os seus dados de acesso em segurança e por todas as actividades realizadas na sua conta.</p>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">5. Preços e Pagamento</h2>
-          <p>O plano CTM Pro tem o valor de €9,99 por mês, sem fidelização. O pagamento é processado de forma segura através da plataforma Lemon Squeezy. Os preços incluem IVA aplicável.</p>
-          <p>O Dashboard CTM, quando disponível, terá o valor de €39,99 em venda única.</p>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">6. Cancelamento</h2>
-          <p>O utilizador pode cancelar a sua subscrição a qualquer momento, sem penalização, directamente através da plataforma de pagamento Lemon Squeezy. O acesso mantém-se activo até ao fim do período já pago.</p>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">7. Propriedade Intelectual</h2>
-          <p>Todo o conteúdo produzido pelo CTM Pro — análises, fichas, textos, metodologia e materiais de apoio — é propriedade do prestador. É proibida a reprodução, distribuição ou partilha pública de qualquer conteúdo sem autorização prévia e escrita.</p>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">8. Limitação de Responsabilidade</h2>
-          <p>O CTM Pro não se responsabiliza por perdas financeiras, decisões de investimento ou quaisquer danos directos ou indirectos resultantes da utilização da informação disponibilizada. O utilizador reconhece que o investimento em mercados financeiros comporta riscos, incluindo a perda total do capital investido.</p>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">9. Alterações aos Termos</h2>
-          <p>O prestador reserva-se o direito de alterar estes Termos de Serviço a qualquer momento, com aviso prévio de 15 dias através dos canais da comunidade. A continuação da utilização do serviço após esse prazo implica a aceitação das alterações.</p>
-        </section>
-
-        <section className="legal-section">
-          <h2 className="legal-h2">10. Lei Aplicável</h2>
-          <p>Estes Termos de Serviço são regidos pela lei portuguesa. Em caso de litígio, as partes submetem-se à jurisdição dos tribunais portugueses competentes.</p>
-        </section>
-
-        <div className="legal-footer">
-          <a href="/privacidade">Política de Privacidade</a>
-          <span>·</span>
-          <a href="/reembolso">Política de Reembolso</a>
-          <span>·</span>
-          <a href="/">cleantrendmethod.com</a>
-        </div>
-
-      </div>
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
-        :root { --gold: #c8b97a; --border: #1e1e16; --text: #f0ead8; --muted: #777060; --bg-dark: #060605; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        .legal-root { background-color: #09090f; color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; padding: 60px 24px; }
-        .legal-inner { max-width: 720px; margin: 0 auto; }
-        .legal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 48px; }
-        .legal-back { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); text-decoration: none; letter-spacing: 0.06em; transition: color 0.2s; }
-        .legal-back:hover { color: var(--gold); }
-        .legal-logo { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: var(--gold); letter-spacing: 0.15em; }
-        .legal-h1 { font-family: 'DM Sans', sans-serif; font-size: 2rem; font-weight: 500; color: #f5eedc; margin-bottom: 8px; }
-        .legal-meta { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 32px; }
-        .legal-aviso { background: #0d0d08; border: 1px solid #2a2a18; border-left: 3px solid var(--gold); padding: 16px 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 40px; }
-        .legal-section { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px solid var(--border); }
-        .legal-section:last-of-type { border-bottom: none; }
-        .legal-h2 { font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 500; color: var(--gold); margin-bottom: 14px; letter-spacing: 0.02em; }
-        .legal-section p { font-size: 0.88rem; color: var(--muted); line-height: 1.8; font-weight: 300; margin-bottom: 12px; }
-        .legal-section ul { padding-left: 0; list-style: none; margin-top: 8px; }
-        .legal-section ul li { font-size: 0.88rem; color: var(--muted); line-height: 1.7; padding: 5px 0; padding-left: 16px; position: relative; }
-        .legal-section ul li::before { content: "—"; position: absolute; left: 0; color: var(--gold); }
-        .legal-footer { display: flex; gap: 12px; align-items: center; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); flex-wrap: wrap; }
-        .legal-footer a { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: #555; text-decoration: none; letter-spacing: 0.04em; transition: color 0.2s; }
-        .legal-footer a:hover { color: var(--gold); }
-        .legal-footer span { color: #333; font-size: 0.7rem; }
-      `}</style>
-    </main>
-  );
+export const metadata: Metadata = {
+  title: 'Termos e Condições — CTM',
+  description: 'Termos e condições de utilização do serviço CTM — Clean Trend Method.',
 }
+
+export default function TermosPage() {
+  return (
+    <>
+      <style>{LEGAL_STYLES}</style>
+      <main className="legal-page">
+        <header className="legal-nav">
+          <Link href="/" className="back">← Voltar ao início</Link>
+          <span className="brand">· CTM</span>
+        </header>
+
+        <article className="legal-content">
+          <span className="eyebrow">Documento legal · v1.0 · Maio 2026</span>
+          <h1>Termos e Condições</h1>
+          <p className="lead">Estes termos regulam o acesso e a utilização do serviço CTM — Clean Trend Method e dos respectivos canais associados. Ao subscrever ou utilizar o serviço, o utilizador declara aceitar integralmente o presente documento.</p>
+
+          <section>
+            <h2>1. Identificação do prestador</h2>
+            <p>O serviço CTM — Clean Trend Method (doravante &quot;CTM&quot;) é operado por <strong>Carlos Alberto de Sousa Pinto</strong>, com sede em <strong>Rua Principal, 13, 2500-637 Salir de Matos, Portugal</strong>, com o número de identificação fiscal <strong>PT 213 205 700</strong>. Contacto: <a href="mailto:ctmpro2026@gmail.com">ctmpro2026@gmail.com</a>.</p>
+          </section>
+
+          <section>
+            <h2>2. Natureza do serviço</h2>
+            <p>O CTM é uma comunidade de literacia financeira e análise sistemática de mercados. A função do serviço é organizar informação, estruturar contexto e apresentar dados de forma clara, em língua portuguesa.</p>
+            <p><strong>O CTM não presta consultoria financeira</strong>, não gere activos de terceiros, não emite recomendações personalizadas de investimento, não emite sinais de compra ou venda e não actua como intermediário financeiro. Toda a informação publicada tem carácter exclusivamente <strong>educativo e informativo</strong>.</p>
+            <p>Qualquer decisão de investimento, alocação de capital ou execução de operações em mercados financeiros é da exclusiva responsabilidade do utilizador.</p>
+          </section>
+
+          <section>
+            <h2>3. Acesso ao serviço</h2>
+            <p>O CTM dispõe de dois níveis de acesso:</p>
+            <ul>
+              <li><strong>Canal gratuito:</strong> Acesso ao Telegram público, Substack introdutório, briefings resumidos e track record mensal.</li>
+              <li><strong>Membro Pro:</strong> Subscrição mensal de €4,99 que inclui briefings completos, análises Pine 1 e Pine 2, radar de carteira, watchlist por solicitação e canal Pro privado.</li>
+            </ul>
+            <p>O acesso ao nível Pro requer pagamento processado através do prestador Stripe Payments Europe, Ltd.</p>
+          </section>
+
+          <section>
+            <h2>4. Pagamento, renovação e cancelamento</h2>
+            <p>A subscrição Pro é cobrada mensalmente, em ciclos automáticos de 30 dias, à data de adesão. O utilizador pode cancelar a subscrição a qualquer momento, através do portal Stripe ou contactando <a href="mailto:ctmpro2026@gmail.com">ctmpro2026@gmail.com</a>.</p>
+            <p>O cancelamento produz efeitos no final do ciclo de facturação em curso — o utilizador mantém acesso até essa data. Não há renovação automática após cancelamento confirmado.</p>
+          </section>
+
+          <section>
+            <h2>5. Direito de livre resolução</h2>
+            <p>Nos termos da legislação europeia de consumo aplicável a serviços digitais (Decreto-Lei nº 24/2014 e legislação correspondente), o utilizador dispõe do direito de livre resolução do contrato no prazo de <strong>14 dias</strong> a contar da subscrição, sem necessidade de justificação.</p>
+            <p>O exercício deste direito está sujeito à <Link href="/reembolso">Política de Reembolso</Link>.</p>
+          </section>
+
+          <section>
+            <h2>6. Propriedade intelectual</h2>
+            <p>Todos os conteúdos publicados no âmbito do CTM — incluindo análises, frameworks (CTM v10, Pine 1, Pine 2), publicações, gráficos, código e materiais gráficos — são propriedade exclusiva do operador. É proibida a reprodução, distribuição ou utilização comercial sem autorização escrita.</p>
+            <p>O acesso aos canais Pro é estritamente pessoal e não transferível. A partilha de credenciais ou redistribuição de conteúdos constitui causa de cessação imediata da subscrição, sem direito a reembolso.</p>
+          </section>
+
+          <section>
+            <h2>7. Obrigações do utilizador</h2>
+            <ul>
+              <li>Utilizar o serviço de forma legal e em conformidade com os presentes termos;</li>
+              <li>Não partilhar credenciais de acesso nem redistribuir conteúdos Pro;</li>
+              <li>Não utilizar o serviço para fins ilícitos ou contrários à ordem pública;</li>
+              <li>Assumir total responsabilidade por decisões de investimento próprias.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>8. Limitação de responsabilidade</h2>
+            <p>O CTM publica análises e dados de mercado obtidos de fontes consideradas fiáveis, mas não garante a sua exactidão, completude ou actualidade. Resultados passados não constituem garantia de resultados futuros.</p>
+            <p>O operador não é responsável por perdas, danos ou prejuízos resultantes de decisões de investimento tomadas pelo utilizador. O investimento em mercados financeiros envolve risco de perda parcial ou total do capital investido.</p>
+          </section>
+
+          <section>
+            <h2>9. Alteração dos termos</h2>
+            <p>O CTM reserva-se o direito de alterar os presentes termos a qualquer momento. As alterações entram em vigor após publicação nesta página. Em caso de alterações substanciais, o utilizador será notificado por email.</p>
+          </section>
+
+          <section>
+            <h2>10. Lei aplicável e foro</h2>
+            <p>Os presentes termos são regidos pela lei portuguesa. Para a resolução de qualquer litígio emergente do presente contrato, é competente o foro da comarca da sede do operador, com renúncia expressa a qualquer outro.</p>
+            <p>O consumidor pode ainda recorrer a entidades de resolução alternativa de litígios de consumo, conforme legislação aplicável.</p>
+          </section>
+
+          <section>
+            <h2>11. Contacto</h2>
+            <p>Para qualquer questão relativa aos presentes termos: <a href="mailto:ctmpro2026@gmail.com">ctmpro2026@gmail.com</a>.</p>
+          </section>
+
+          <footer className="legal-footer">
+            <p>Última actualização: Maio de 2026 · Versão 1.0</p>
+            <div className="legal-links">
+              <Link href="/termos">Termos e Condições</Link>
+              <Link href="/privacidade">Política de Privacidade</Link>
+              <Link href="/reembolso">Política de Reembolso</Link>
+            </div>
+          </footer>
+        </article>
+      </main>
+    </>
+  )
+}
+
+const LEGAL_STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Figtree:wght@300;400;500;600&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #0E0E0B; --ink-60: rgba(14,14,11,0.6); --ink-40: rgba(14,14,11,0.4);
+  --ink-15: rgba(14,14,11,0.15); --ink-10: rgba(14,14,11,0.1);
+  --paper: #F5F2EC; --paper-2: #EDEAE2;
+  --gold: #B8983E; --gold-2: #D4AF5A;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'DM Mono', ui-monospace, monospace;
+  --sans: 'Figtree', -apple-system, system-ui, sans-serif;
+}
+body { font-family: var(--sans); background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+.legal-page { min-height: 100vh; padding: 0; }
+
+.legal-nav {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 32px; height: 64px;
+  background: rgba(245,242,236,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--ink-10);
+}
+.legal-nav .back {
+  font-family: var(--mono); font-size: 13px; color: var(--ink-60);
+  text-decoration: none; letter-spacing: 0.02em; transition: color .2s;
+}
+.legal-nav .back:hover { color: var(--ink); }
+.legal-nav .brand { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.14em; color: var(--ink); }
+
+.legal-content {
+  max-width: 740px; margin: 0 auto; padding: 80px 32px 120px;
+}
+
+.legal-content .eyebrow {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 24px; display: inline-block;
+}
+
+.legal-content h1 {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(40px, 6vw, 64px); line-height: 1.04; letter-spacing: -0.015em;
+  margin-bottom: 24px;
+}
+
+.legal-content .lead {
+  font-size: 18px; font-weight: 300; color: var(--ink-60);
+  line-height: 1.65; margin-bottom: 56px; max-width: 60ch;
+  padding-bottom: 32px; border-bottom: 1px solid var(--ink-10);
+}
+
+.legal-content section { margin-bottom: 48px; }
+.legal-content section h2 {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(22px, 2.8vw, 28px); line-height: 1.2; letter-spacing: -0.005em;
+  margin-bottom: 16px; color: var(--ink);
+}
+.legal-content section p {
+  font-size: 15px; color: var(--ink-60); line-height: 1.75; margin-bottom: 14px;
+}
+.legal-content section p:last-child { margin-bottom: 0; }
+.legal-content section strong { color: var(--ink); font-weight: 500; }
+.legal-content section a {
+  color: var(--ink); text-decoration: underline; text-underline-offset: 2px;
+  text-decoration-color: var(--gold); text-decoration-thickness: 1px;
+}
+.legal-content section a:hover { color: var(--gold); }
+.legal-content section ul {
+  list-style: none; margin: 14px 0; padding-left: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.legal-content section ul li {
+  font-size: 15px; color: var(--ink-60); line-height: 1.65;
+  padding-left: 20px; position: relative;
+}
+.legal-content section ul li::before {
+  content: '—'; position: absolute; left: 0; color: var(--gold); font-family: var(--mono);
+}
+
+.legal-footer {
+  margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--ink-10);
+}
+.legal-footer p {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-40);
+  letter-spacing: 0.04em; margin-bottom: 16px;
+}
+.legal-footer .legal-links {
+  display: flex; flex-wrap: wrap; gap: 12px;
+}
+.legal-footer .legal-links a {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
+  color: var(--ink-60); text-decoration: none;
+  padding: 7px 14px; border: 1px solid var(--ink-15); border-radius: 6px;
+  transition: all .2s ease;
+}
+.legal-footer .legal-links a:hover { color: var(--ink); border-color: var(--ink); background: var(--paper-2); }
+
+@media (max-width: 768px) {
+  .legal-nav { padding: 14px 20px; height: 56px; }
+  .legal-content { padding: 48px 20px 80px; }
+}
+`
